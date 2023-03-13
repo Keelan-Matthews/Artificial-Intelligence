@@ -13,14 +13,18 @@ public class App {
         for (int i = 0; i < instances.length; i++) {
             int[] instance = instances[i];
             System.out.println("Instance " + (i + 1) + ": " + Arrays.toString(instance));
+
             long startTime = System.nanoTime();
             boolean bfsResult = EightPuzzle.bestFirstSearch(instance);
             long bfsTime = System.nanoTime() - startTime;
+
             System.out.println("Best-First Search Result: " + bfsResult);
             System.out.println("Best-First Search Time: " + bfsTime + " nanoseconds");
+
             startTime = System.nanoTime();
             boolean aStarResult = EightPuzzle.aStar(instance);
             long aStarTime = System.nanoTime() - startTime;
+            
             System.out.println("A* Result: " + aStarResult);
             System.out.println("A* Time: " + aStarTime + " nanoseconds");
             System.out.println();
