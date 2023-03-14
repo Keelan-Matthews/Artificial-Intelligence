@@ -1,12 +1,9 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class App {
     public static void main(String[] args) throws Exception {
 
-        HelperFunctions helperFunctions = new HelperFunctions();
-        
         String[] datasets = {
             "Falkenauer/Falkenauer_T",
             "Falkenauer/Falkenauer_U",
