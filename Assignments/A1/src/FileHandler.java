@@ -35,9 +35,9 @@ public class FileHandler {
      * @param timeToComplete
      * @param numBins
      */
-    public static void writeData(String path, int timeToComplete, int numBins, int index, int optimalSolution, String algorithm) {
+    public static void writeData(String path, int timeToComplete, int numBins, int index, int optimalSolution, String algorithm, String testName) {
         try {
-            String directory = resultsPath + path + "/" + algorithm + "/SOL_" + index + ".txt";
+            String directory = resultsPath + path + "/" + algorithm + "/SOL_" + testName;
             File file = new File(directory);
             file.createNewFile();
 
@@ -48,9 +48,11 @@ public class FileHandler {
             writer.write(nl);
             writer.write("Optimal solution: " + optimalSolution);
             writer.write(nl);
-            writer.write("Optimization quality: " + ((optimalSolution - numBins == 0) ? "OPTIMAL" : (optimalSolution - numBins) == 1 ? "NEAR-OPTIMAL" : "SUB-OPTIMAL"));
+            // if number of bins used equals the optimal solution, the solution is optimal,
+            // if number of bins used is at most 1 more than the optimal solution, the solution is near-optimal,
+            // otherwise the solution is sub-optimal
+            writer.write("Optimization level: " + (numBins <= optimalSolution ? "OPTIMAL" : (numBins == optimalSolution + 1 ? "NEAR-OPTIMAL" : "SUB-OPTIMAL")));
             writer.close();
-            System.out.println("Successfully wrote to " + directory);
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }

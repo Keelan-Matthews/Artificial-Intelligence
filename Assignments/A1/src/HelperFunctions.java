@@ -1702,4 +1702,15 @@ public class HelperFunctions {
         });
     }
 
+    public static void printBins(List<List<Integer>> solution) {
+        for (List<Integer> bin : solution) {
+            System.out.println("Bin " + solution.indexOf(bin) + " contains:");
+            System.out.print("[ ");
+            for (Integer item : bin)
+                System.out.print(item + " ");
+            System.out.print("]  ");
+            System.out.println(" (sum = " + bin.stream().mapToInt(Integer::intValue).sum() + ")");
+            System.out.println();
+        }
+    }
 }

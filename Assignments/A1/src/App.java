@@ -22,13 +22,15 @@ public class App {
         // The list contains an array for each text file in the dataset, and the array contains
         // the values in the text file
         HashMap<String, List<int[]>> datasetValues = new HashMap<>();
+        HashMap<String, String[]> datasetNames = new HashMap<>();
 
         for (String dataset : datasets) {
             datasetValues.put(dataset, HelperFunctions.getValues(dataset));
+            datasetNames.put(dataset, FileHandler.getTextFileNames(dataset));
         }
 
         // Run the ILS algorithm on each dataset
-        ILS ils = new ILS("Hard28", datasetValues.get("Hard28"));
+        ILS ils = new ILS("Hard28", datasetValues.get("Hard28"), datasetNames.get("Hard28"));
         ils.run();
 
         // for (String dataset : datasets) {

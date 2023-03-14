@@ -1,4 +1,0 @@
-Time to complete: 2ms
-Number of bins: 114
-Optimal solution: 81
-Optimization quality: SUB-OPTIMAL

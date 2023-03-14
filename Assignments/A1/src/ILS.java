@@ -3,26 +3,29 @@ import java.util.List;
 import java.util.Random;
 
 public class ILS {
-    private static final int MAX_ITERATIONS = 100; // The maximum number of iterations to run the algorithm for
+    private static final int MAX_ITERATIONS = 1000; // The maximum number of iterations to run the algorithm for
     private static final int MAX_CAPACITY = 1000; // The maximum capacity of each bin
-    private static final int NUM_NEIGHBOURS = 10; // The number of neighbours to generate for each iteration
+    private static final int NUM_NEIGHBOURS = 100; // The number of neighbours to generate for each iteration
 
     private Random random;
 
     private String dataset; // The name of the dataset
     private List<int[]> testResults; // A list of the results of each test
     private List<int[]> tests; // A list of the tests to run
+    private String[] testNames; // A list of the names of the tests to run
     private int[] values; // The values to be packed into bins
 
-    public ILS(String dataset, List<int[]> tests) {
+    public ILS(String dataset, List<int[]> tests, String[] testNames) {
         this.dataset = dataset;
         this.tests = tests;
+        this.testNames = testNames;
 
         testResults = new ArrayList<>();
         random = new Random();
     }
 
     public void run() {
+        // solve(tests.get(0), 0);
         for (int i = 0; i < tests.size(); i++) {
             solve(tests.get(i), i);
         }
@@ -37,8 +40,11 @@ public class ILS {
         int numBins = 0;
         int optimalSolution = HelperFunctions.getOptimum(dataset, index);
 
+        System.out.println("File name: " + testNames[index]);
+
         // Generate initial solution
         List<List<Integer>> currentSolution = getInitialSolution();
+
         // Set it as the best solution
         List<List<Integer>> bestSolution = currentSolution;
 
@@ -48,8 +54,9 @@ public class ILS {
             List<List<Integer>> newSolution = perturb(currentSolution);
             // Perform local search on the perturbed solution
             newSolution = localSearch(newSolution);
-            // If the new solution is better than the current best solution, set it as the new best solution
-            if (calculateFitness(newSolution) > calculateFitness(bestSolution)) {
+            // If the new solution is better than the current best solution, set it as the
+            // new best solution
+            if (newSolution.size() < bestSolution.size()) {
                 bestSolution = newSolution;
             }
             currentSolution = newSolution;
@@ -61,7 +68,7 @@ public class ILS {
         int endTime = (int) System.currentTimeMillis();
         int timeToComplete = endTime - startTime;
         testResults.add(new int[] { timeToComplete, numBins, optimalSolution });
-        FileHandler.writeData(dataset, timeToComplete, numBins, index, optimalSolution, "ILS");
+        FileHandler.writeData(dataset, timeToComplete, numBins, index, optimalSolution, "ILS", testNames[index]);
     }
 
     private List<List<Integer>> getInitialSolution() {
@@ -78,32 +85,22 @@ public class ILS {
                 }
 
                 // Add the item to the last bin
-                solution.get(solution.size() - 1).add(i);
-                remainingCapacity -= values[i];
+                solution.get(solution.size() - 1).add(this.values[i]);
+                remainingCapacity -= this.values[i];
             } else {
                 // Create a new bin and add the item to it
                 solution.add(new ArrayList<>());
-                solution.get(solution.size() - 1).add(i);
-                remainingCapacity = MAX_CAPACITY - values[i];
+                solution.get(solution.size() - 1).add(this.values[i]);
+                remainingCapacity = MAX_CAPACITY - this.values[i];
             }
         }
-        
+
         return solution;
     }
 
-    private int calculateFitness(List<List<Integer>> solution) {
-        // Calculate fitness as the number of used bins
-        int numUsedBins = 0;
-        for (List<Integer> bin : solution) {
-            if (!bin.isEmpty()) {
-                numUsedBins++;
-            }
-        }
-        return numUsedBins;
-    }
-
     private List<List<Integer>> perturb(List<List<Integer>> solution) {
-        // Perturb solution by randomly adding or removing a number of items between bins
+        // Perturb solution by randomly adding or removing a number of items between
+        // bins
         List<List<Integer>> perturbedSolution = new ArrayList<>();
 
         // Deep copy the solution
@@ -119,7 +116,7 @@ public class ILS {
             // Randomly select two bins
             int binIndexA = random.nextInt(perturbedSolution.size());
             int binIndexB = random.nextInt(perturbedSolution.size());
-            
+
             // Make sure the bins are different
             while (binIndexA == binIndexB) {
                 binIndexB = random.nextInt(perturbedSolution.size());
@@ -135,6 +132,11 @@ public class ILS {
                 if (item <= calculateRemainingCapacity(perturbedSolution.get(binIndexB))) {
                     perturbedSolution.get(binIndexA).remove(itemIndex);
                     perturbedSolution.get(binIndexB).add(item);
+                }
+
+                // If the first bin is now empty, remove it
+                if (perturbedSolution.get(binIndexA).isEmpty()) {
+                    perturbedSolution.remove(binIndexA);
                 }
             }
         }
