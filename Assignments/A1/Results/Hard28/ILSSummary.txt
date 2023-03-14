@@ -1,0 +1,4 @@
+Average time to complete: 3.0ms
+Opt: 0
+Opt-1: 0
+Sum: 28

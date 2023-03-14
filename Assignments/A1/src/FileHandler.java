@@ -37,7 +37,8 @@ public class FileHandler {
      */
     public static void writeData(String path, int timeToComplete, int numBins, int index, int optimalSolution, String algorithm) {
         try {
-            File file = new File(resultsPath + path + "/" + algorithm + "/SOL_" + index + ".txt");
+            String directory = resultsPath + path + "/" + algorithm + "/SOL_" + index + ".txt";
+            File file = new File(directory);
             file.createNewFile();
 
             FileWriter writer = new FileWriter(file);
@@ -49,6 +50,7 @@ public class FileHandler {
             writer.write(nl);
             writer.write("Optimization quality: " + ((optimalSolution - numBins == 0) ? "OPTIMAL" : (optimalSolution - numBins) == 1 ? "NEAR-OPTIMAL" : "SUB-OPTIMAL"));
             writer.close();
+            System.out.println("Successfully wrote to " + directory);
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }
@@ -84,7 +86,8 @@ public class FileHandler {
 
         // Print the summary to a new tset file called Summary.txt
         try {
-            File file = new File(resultsPath + path + "/ILSSummary.txt");
+            String directory = resultsPath + path + "/ILSSummary.txt";
+            File file = new File(directory);
             file.createNewFile();
 
             FileWriter writer = new FileWriter(file);
@@ -96,6 +99,7 @@ public class FileHandler {
             writer.write(nl);
             writer.write("Sum: " + totalTests);
             writer.close();
+            System.out.println("Successfully wrote to " + directory);
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }
