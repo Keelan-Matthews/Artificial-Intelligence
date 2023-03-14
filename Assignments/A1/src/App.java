@@ -30,7 +30,7 @@ public class App {
         }
 
         // Run the ILS algorithm on each dataset
-        ILS ils = new ILS("Hard28", datasetValues.get("Hard28"), datasetNames.get("Hard28"));
+        ILS ils = new ILS(datasets[0], datasetValues.get(datasets[0]), datasetNames.get(datasets[0]));
         ils.run();
 
         // for (String dataset : datasets) {

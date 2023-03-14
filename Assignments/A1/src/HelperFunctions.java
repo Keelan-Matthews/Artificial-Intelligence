@@ -37,10 +37,23 @@ public class HelperFunctions {
             System.out.println("]");
         }
     }
-    
+
+    public static void reverse(int[] arr) {
+        int i = 0, j = arr.length - 1;
+        while (i < j) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            i++;
+            j--;
+        }
+    }
+
     public static Integer getOptimum(String dataset, int index) {
         if (knownOptimums.isEmpty())
             populateOptimums();
+
+        System.out.println("Dataset: " + dataset + " Index: " + index);
         return knownOptimums.get(dataset).get(index);
     }
 
@@ -66,6 +79,8 @@ public class HelperFunctions {
                 add(40);
                 add(40);
                 add(40);
+                add(40);
+                add(83);
                 add(83);
                 add(83);
                 add(83);
@@ -104,6 +119,8 @@ public class HelperFunctions {
                 add(167);
                 add(167);
                 add(167);
+                add(167);
+                add(20);
                 add(20);
                 add(20);
                 add(20);
@@ -1538,7 +1555,7 @@ public class HelperFunctions {
                 add(18);
                 add(18);
                 add(18);
-                
+
             }
         });
         knownOptimums.put("Schwerin/Schwerin_2", new ArrayList<Integer>() {
@@ -1643,7 +1660,7 @@ public class HelperFunctions {
                 add(22);
                 add(21);
                 add(22);
-                
+
             }
         });
         knownOptimums.put("Hard28", new ArrayList<Integer>() {
@@ -1676,7 +1693,7 @@ public class HelperFunctions {
                 add(81);
                 add(60);
                 add(75);
-                
+
             }
         });
         knownOptimums.put("Waescher", new ArrayList<Integer>() {
@@ -1697,7 +1714,7 @@ public class HelperFunctions {
                 add(24);
                 add(16);
                 add(16);
-                add(12);                
+                add(12);
             }
         });
     }
@@ -1713,4 +1730,5 @@ public class HelperFunctions {
             System.out.println();
         }
     }
+
 }

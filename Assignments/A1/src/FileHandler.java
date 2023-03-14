@@ -35,11 +35,12 @@ public class FileHandler {
      * @param timeToComplete
      * @param numBins
      */
-    public static void writeData(String path, int timeToComplete, int numBins, int index, int optimalSolution, String algorithm, String testName) {
+    public static void writeData(String path, int timeToComplete, List<List<Integer>> bestSolution, int index, int optimalSolution, String algorithm, String testName) {
         try {
             String directory = resultsPath + path + "/" + algorithm + "/SOL_" + testName;
             File file = new File(directory);
             file.createNewFile();
+            int numBins = bestSolution.size();
 
             FileWriter writer = new FileWriter(file);
             writer.write("Time to complete: " + timeToComplete + "ms");
@@ -52,6 +53,19 @@ public class FileHandler {
             // if number of bins used is at most 1 more than the optimal solution, the solution is near-optimal,
             // otherwise the solution is sub-optimal
             writer.write("Optimization level: " + (numBins <= optimalSolution ? "OPTIMAL" : (numBins == optimalSolution + 1 ? "NEAR-OPTIMAL" : "SUB-OPTIMAL")));
+            writer.write(nl);
+            writer.write("Optimized percentage: " + (int) Math.round(((double) optimalSolution / numBins) * 100) + "%");
+            writer.write(nl);
+            writer.write(nl);
+            for (List<Integer> bin : bestSolution) {
+                writer.write("[ ");
+                for (Integer item : bin)
+                writer.write(item + " ");
+                writer.write("] ");
+                writer.write("S: " + bin.stream().mapToInt(Integer::intValue).sum());
+                writer.write(nl);
+            }
+            
             writer.close();
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
@@ -63,28 +77,27 @@ public class FileHandler {
         // Get the average time to complete all the tests in the list
         int totalTime = 0;
         int totalTests = testResults.size();
-        for (int[] testResult : testResults) {
-            totalTime += testResult[0];
-        }
-        float averageTime = totalTime / totalTests;
-        averageTime = Math.round(averageTime * 100.0f) / 100.0f;
 
         // The second value in the integer array is the number of bins used,
         // Get the total number of tests where the number of bins used equals the optimal solution (third value in the integer array)
         int numOptimalSolutions = 0;
-        for (int[] testResult : testResults) {
-            if (testResult[1] == testResult[2]) {
-                numOptimalSolutions++;
-            }
-        }
 
         // Get the total number of tests where the number of bins used is within 1 of the optimal solution
         int numNearOptimalSolutions = 0;
+
         for (int[] testResult : testResults) {
-            if (testResult[1] == testResult[2] - 1) {
+            totalTime += testResult[0];
+
+            if (testResult[1] == testResult[2]) {
+                numOptimalSolutions++;
+            }
+
+            if (testResult[1] == testResult[2] + 1) {
                 numNearOptimalSolutions++;
             }
         }
+        float averageTime = totalTime / totalTests;
+        averageTime = Math.round(averageTime * 100.0f) / 100.0f;
 
         // Print the summary to a new tset file called Summary.txt
         try {

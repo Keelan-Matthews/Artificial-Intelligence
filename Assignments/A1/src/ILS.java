@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class ILS {
-    private static final int MAX_ITERATIONS = 1000; // The maximum number of iterations to run the algorithm for
-    private static final int MAX_CAPACITY = 1000; // The maximum capacity of each bin
-    private static final int NUM_NEIGHBOURS = 100; // The number of neighbours to generate for each iteration
+    private int MAX_ITERATIONS; // The maximum number of iterations to run the algorithm for
+    private int MAX_CAPACITY; // The maximum capacity of each bin
+    private int NUM_NEIGHBOURS; // The number of neighbours to generate for each iteration
 
     private Random random;
 
@@ -37,14 +38,26 @@ public class ILS {
         // Initialize variables
         this.values = v;
         int startTime = (int) System.currentTimeMillis();
-        int numBins = 0;
         int optimalSolution = HelperFunctions.getOptimum(dataset, index);
+
+        MAX_CAPACITY = v[1];
+        MAX_ITERATIONS = v[1];
+        NUM_NEIGHBOURS = v[0]/10;
+
+        // Remove the first two values from the array, as they are not part of the values
+        // to be packed
+        int[] temp = new int[v.length - 2];
+        for (int i = 2; i < v.length; i++) {
+            temp[i - 2] = v[i];
+        }
+        this.values = temp;
 
         System.out.println("File name: " + testNames[index]);
 
+
+
         // Generate initial solution
         List<List<Integer>> currentSolution = getInitialSolution();
-
         // Set it as the best solution
         List<List<Integer>> bestSolution = currentSolution;
 
@@ -62,37 +75,27 @@ public class ILS {
             currentSolution = newSolution;
         }
 
-        // Calculate the number of bins used in the best solution
-        numBins = bestSolution.size();
+
 
         int endTime = (int) System.currentTimeMillis();
         int timeToComplete = endTime - startTime;
-        testResults.add(new int[] { timeToComplete, numBins, optimalSolution });
-        FileHandler.writeData(dataset, timeToComplete, numBins, index, optimalSolution, "ILS", testNames[index]);
+        testResults.add(new int[] { timeToComplete, bestSolution.size(), optimalSolution });
+        FileHandler.writeData(dataset, timeToComplete, bestSolution, index, optimalSolution, "ILS", testNames[index]);
     }
 
+    /**
+     * Generate an initial solution by adding items to bins using the best fit algorithm
+     * @return
+     */
     private List<List<Integer>> getInitialSolution() {
-        // Generate initial solution by greedily packing items into bins in
-        // non-increasing order of size
+        Arrays.sort(values);
+        HelperFunctions.reverse(values);
+
         List<List<Integer>> solution = new ArrayList<>();
-        int remainingCapacity = MAX_CAPACITY;
 
-        for (int i = 0; i < this.values.length; i++) {
-            if (this.values[i] <= remainingCapacity) {
-                // If we have not yet created a bin, create one
-                if (solution.isEmpty()) {
-                    solution.add(new ArrayList<>());
-                }
-
-                // Add the item to the last bin
-                solution.get(solution.size() - 1).add(this.values[i]);
-                remainingCapacity -= this.values[i];
-            } else {
-                // Create a new bin and add the item to it
-                solution.add(new ArrayList<>());
-                solution.get(solution.size() - 1).add(this.values[i]);
-                remainingCapacity = MAX_CAPACITY - this.values[i];
-            }
+        // Add items to bins using the best fit function
+        for (int item : values) {
+            solution = bestFit(solution, item);
         }
 
         return solution;
@@ -162,29 +165,74 @@ public class ILS {
             localSearchSolution.add(new ArrayList<>(bin));
         }
 
-        // Remove items from bins and add them to other bins if they fit
-        for (int i = 0; i < localSearchSolution.size(); i++) {
-            for (int j = 0; j < localSearchSolution.get(i).size(); j++) {
-                int item = localSearchSolution.get(i).get(j);
-                boolean itemRemoved = false;
+        int currentFitness = localSearchSolution.size();
+        boolean improved = true;
 
-                // Try to remove the item from the bin
-                if (item <= calculateRemainingCapacity(localSearchSolution.get(i))) {
-                    localSearchSolution.get(i).remove(j);
-                    itemRemoved = true;
+        while (improved) {
+            improved = false;
+
+            // Remove items from bins and add them to other bins if they fit
+            for (int i = 0; i < localSearchSolution.size(); i++) {
+                for (int j = 0; j < localSearchSolution.get(i).size(); j++) {
+
+                    int item = localSearchSolution.get(i).get(j);
+                    boolean itemRemoved = false;
+
+                    // Try to remove the item from the bin
+                    if (item <= calculateRemainingCapacity(localSearchSolution.get(i))) {
+                        localSearchSolution.get(i).remove(j);
+                        itemRemoved = true;
+                    }
+
+                    // Try to add the item to another bin using best fit
+                    if (itemRemoved) {
+                        localSearchSolution = bestFit(localSearchSolution, item);
+                    }
+
+                    // If the solution has improved, set improved to true
+                    if (localSearchSolution.size() < currentFitness) {
+                        improved = true;
+                        currentFitness = localSearchSolution.size();
+                    }
                 }
 
-                // Try to add the item to another bin
-                if (itemRemoved) {
-                    for (int k = 0; k < localSearchSolution.size(); k++) {
-                        if (item <= calculateRemainingCapacity(localSearchSolution.get(k))) {
-                            localSearchSolution.get(k).add(item);
-                            break;
-                        }
-                    }
+                // If the bin is now empty, remove it
+                if (localSearchSolution.get(i).isEmpty()) {
+                    localSearchSolution.remove(i);
                 }
             }
         }
         return localSearchSolution;
+    }
+
+    /**
+     * Finds the bin with the smallest remaining capacity that can fit the item
+     * @param solution
+     * @param item
+     * @return
+     */
+    private List<List<Integer>> bestFit(List<List<Integer>> solution, int item) {
+        int bestBinIndex = -1;
+        int bestBinRemainingCapacity = MAX_CAPACITY;
+
+        for (int i = 0; i < solution.size(); i++) {
+            int remainingCapacity = calculateRemainingCapacity(solution.get(i));
+            // If the item fits in the bin and the bin has the smallest remaining capacity
+            if (item <= remainingCapacity && remainingCapacity < bestBinRemainingCapacity) {
+                bestBinIndex = i;
+                bestBinRemainingCapacity = remainingCapacity;
+            }
+        }
+
+        // If no bin can fit the item, create a new bin
+        if (bestBinIndex == -1) {
+            solution.add(new ArrayList<>());
+            bestBinIndex = solution.size() - 1;
+        }
+
+        // Add the item to the bin
+        solution.get(bestBinIndex).add(item);
+
+        return solution;
     }
 }
