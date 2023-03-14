@@ -10,6 +10,10 @@ public class FileHandler {
     private static String dataPath = "Datasets/";
     private static String resultsPath = "Results/";
     private static String nl = System.getProperty("line.separator");
+
+    private static List<Integer[]> performanceValues = new ArrayList<>();
+    private static List<String> performanceValueNames = new ArrayList<>();
+
     
     /**
      * Reads the data from a text file and returns it as a list of integers
@@ -67,6 +71,7 @@ public class FileHandler {
             }
             
             writer.close();
+
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }
@@ -106,6 +111,9 @@ public class FileHandler {
             file.createNewFile();
 
             FileWriter writer = new FileWriter(file);
+            writer.write(path);
+            writer.write(nl);
+            writer.write(nl);
             writer.write("Average time to complete: " + averageTime + "ms");
             writer.write(nl);
             writer.write("Opt: " + numOptimalSolutions);
@@ -115,6 +123,11 @@ public class FileHandler {
             writer.write("Sum: " + totalTests);
             writer.close();
             System.out.println("Successfully wrote to " + directory);
+
+            // Add the summary to the hashmap
+            performanceValues.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
+            performanceValueNames.add(path);
+
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         }
@@ -141,5 +154,32 @@ public class FileHandler {
 
         String[] fileNamesArray = new String[fileNames.size()];
         return fileNames.toArray(fileNamesArray);
+    }
+
+    public static void printOverallPerformance(String algorithm) {
+        String folder = algorithm == "ILS" ? "ILSPerformance/" : "TabuPerformance/";
+        String filename = algorithm == "ILS" ? "ILSPerformance.txt" : "TabuPerformance.txt";
+        // Print the summary to a new text file called Performance
+        try {
+            String directory = resultsPath + folder + filename;
+            File file = new File(directory);
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file);
+            
+            // Print the summary for each entry in the hashmap
+            for (int i = 0; i < performanceValueNames.size(); i++) {
+                writer.write("Dataset: " + performanceValueNames.get(i));
+                writer.write(nl);
+                writer.write("Optimal: " + performanceValues.get(i)[0] + " | Near: " + performanceValues.get(i)[1] + " | Sum: " + performanceValues.get(i)[2]);
+                writer.write(nl);
+                writer.write("---------------------------------------");
+                writer.write(nl);
+                writer.write(nl);
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
     }
 }

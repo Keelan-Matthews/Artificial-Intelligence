@@ -53,7 +53,6 @@ public class HelperFunctions {
         if (knownOptimums.isEmpty())
             populateOptimums();
 
-        System.out.println("Dataset: " + dataset + " Index: " + index);
         return knownOptimums.get(dataset).get(index);
     }
 
@@ -1453,7 +1452,7 @@ public class HelperFunctions {
 
             }
         });
-        knownOptimums.put("Schwerin/Schwerin_", new ArrayList<Integer>() {
+        knownOptimums.put("Schwerin/Schwerin_1", new ArrayList<Integer>() {
             {
                 add(18);
                 add(18);

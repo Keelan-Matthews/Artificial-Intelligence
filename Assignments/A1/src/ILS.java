@@ -6,7 +6,6 @@ import java.util.Random;
 public class ILS {
     private int MAX_ITERATIONS; // The maximum number of iterations to run the algorithm for
     private int MAX_CAPACITY; // The maximum capacity of each bin
-    private int NUM_NEIGHBOURS; // The number of neighbours to generate for each iteration
 
     private Random random;
 
@@ -42,7 +41,6 @@ public class ILS {
 
         MAX_CAPACITY = v[1];
         MAX_ITERATIONS = v[1];
-        NUM_NEIGHBOURS = v[0]/10;
 
         // Remove the first two values from the array, as they are not part of the values
         // to be packed
@@ -51,8 +49,6 @@ public class ILS {
             temp[i - 2] = v[i];
         }
         this.values = temp;
-
-        System.out.println("File name: " + testNames[index]);
 
 
 
@@ -101,9 +97,13 @@ public class ILS {
         return solution;
     }
 
+    /**
+     * Peturb the solution by removing half of the items from their bins and then packing 
+     * them into new bins using the best fit algorithm
+     * @param solution
+     * @return
+     */
     private List<List<Integer>> perturb(List<List<Integer>> solution) {
-        // Perturb solution by randomly adding or removing a number of items between
-        // bins
         List<List<Integer>> perturbedSolution = new ArrayList<>();
 
         // Deep copy the solution
@@ -111,38 +111,38 @@ public class ILS {
             perturbedSolution.add(new ArrayList<>(bin));
         }
 
-        // Randomly move items between bins this many times
-        int numItemsToMove = random.nextInt(NUM_NEIGHBOURS + 1);
+        // Randomly remove half of the items from their bins
+        int numItemsToRemove = solution.size() / 2;
+        List<Integer> removedItems = new ArrayList<>();
 
-        // Move items between bins
-        for (int i = 0; i < numItemsToMove; i++) {
-            // Randomly select two bins
-            int binIndexA = random.nextInt(perturbedSolution.size());
-            int binIndexB = random.nextInt(perturbedSolution.size());
-
-            // Make sure the bins are different
-            while (binIndexA == binIndexB) {
-                binIndexB = random.nextInt(perturbedSolution.size());
-            }
+        while (numItemsToRemove > 0) {
+            // Randomly select a bin
+            int binIndex = random.nextInt(perturbedSolution.size());
 
             // Make sure the bin is not empty
-            if (!perturbedSolution.get(binIndexA).isEmpty()) {
-                // Randomly select an item from the first bin
-                int itemIndex = random.nextInt(perturbedSolution.get(binIndexA).size());
-                int item = perturbedSolution.get(binIndexA).get(itemIndex);
+            if (!perturbedSolution.get(binIndex).isEmpty()) {
+                // Randomly select an item from the bin
+                int itemIndex = random.nextInt(perturbedSolution.get(binIndex).size());
+                int item = perturbedSolution.get(binIndex).get(itemIndex);
 
-                // If the item fits in the second bin, move it
-                if (item <= calculateRemainingCapacity(perturbedSolution.get(binIndexB))) {
-                    perturbedSolution.get(binIndexA).remove(itemIndex);
-                    perturbedSolution.get(binIndexB).add(item);
+                // Remove the item from the bin
+                perturbedSolution.get(binIndex).remove(itemIndex);
+                removedItems.add(item);
+
+                // If the bin is now empty, remove it
+                if (perturbedSolution.get(binIndex).isEmpty()) {
+                    perturbedSolution.remove(binIndex);
                 }
 
-                // If the first bin is now empty, remove it
-                if (perturbedSolution.get(binIndexA).isEmpty()) {
-                    perturbedSolution.remove(binIndexA);
-                }
+                numItemsToRemove--;
             }
         }
+
+        // Pack the removed items into new bins using the best fit algorithm
+        for (int item : removedItems) {
+            perturbedSolution = bestFit(perturbedSolution, item);
+        }
+
         return perturbedSolution;
     }
 
@@ -155,9 +155,13 @@ public class ILS {
         return remainingCapacity;
     }
 
+    /**
+     * Perform local search on the solution by removing items from bins and adding them to
+     * other bins if they fit
+     * @param solution
+     * @return
+     */
     private List<List<Integer>> localSearch(List<List<Integer>> solution) {
-        // Perform local search on the solution by removing items from bins
-        // and adding them to other bins if they fit
         List<List<Integer>> localSearchSolution = new ArrayList<>();
 
         // Deep copy the solution

@@ -30,13 +30,12 @@ public class App {
         }
 
         // Run the ILS algorithm on each dataset
-        ILS ils = new ILS(datasets[0], datasetValues.get(datasets[0]), datasetNames.get(datasets[0]));
-        ils.run();
+        for (String dataset : datasets) {
+            System.out.println("Dataset: " + dataset);
+            ILS ils = new ILS(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
+            ils.run();
+        }
 
-        // for (String dataset : datasets) {
-        //     System.out.println("Dataset: " + dataset);
-        //     // ILS ils = new ILS(datasetValues.get(dataset));
-        //     // ils.run();
-        // }
+        FileHandler.printOverallPerformance("ILS");
     }
 }
