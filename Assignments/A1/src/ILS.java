@@ -25,12 +25,11 @@ public class ILS {
     }
 
     public void run() {
-        // solve(tests.get(0), 0);
         for (int i = 0; i < tests.size(); i++) {
             solve(tests.get(i), i);
         }
 
-        FileHandler.printSummary(testResults, dataset);
+        FileHandler.printSummary(testResults, dataset, "ILS");
     }
 
     private void solve(int[] v, int index) {

@@ -11,8 +11,10 @@ public class FileHandler {
     private static String resultsPath = "Results/";
     private static String nl = System.getProperty("line.separator");
 
-    private static List<Integer[]> performanceValues = new ArrayList<>();
-    private static List<String> performanceValueNames = new ArrayList<>();
+    private static List<Integer[]> performanceValuesILS = new ArrayList<>();
+    private static List<String> performanceValueNamesILS = new ArrayList<>();
+    private static List<Integer[]> performanceValuesTS = new ArrayList<>();
+    private static List<String> performanceValueNamesTS = new ArrayList<>();
 
     
     /**
@@ -77,7 +79,7 @@ public class FileHandler {
         }
     }
 
-    public static void printSummary(List<int[]> testResults, String path) {
+    public static void printSummary(List<int[]> testResults, String path, String algorithm) {
         // The first value in the integer array is the time to complete the test,
         // Get the average time to complete all the tests in the list
         int totalTime = 0;
@@ -106,7 +108,8 @@ public class FileHandler {
 
         // Print the summary to a new tset file called Summary.txt
         try {
-            String directory = resultsPath + path + "/ILSSummary.txt";
+            String filename = algorithm == "ILS" ? "/ILSSummary.txt" : "/TabuSummary.txt";
+            String directory = resultsPath + path + filename;
             File file = new File(directory);
             file.createNewFile();
 
@@ -125,8 +128,13 @@ public class FileHandler {
             System.out.println("Successfully wrote to " + directory);
 
             // Add the summary to the hashmap
-            performanceValues.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
-            performanceValueNames.add(path);
+            if (algorithm == "ILS") {
+                performanceValuesILS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
+                performanceValueNamesILS.add(path);
+            } else {
+                performanceValuesTS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
+                performanceValueNamesTS.add(path);
+            }
 
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
@@ -166,6 +174,9 @@ public class FileHandler {
             file.createNewFile();
 
             FileWriter writer = new FileWriter(file);
+
+            List<Integer[]> performanceValues = algorithm == "ILS" ? performanceValuesILS : performanceValuesTS;
+            List<String> performanceValueNames = algorithm == "ILS" ? performanceValueNamesILS : performanceValueNamesTS;
             
             // Print the summary for each entry in the hashmap
             for (int i = 0; i < performanceValueNames.size(); i++) {

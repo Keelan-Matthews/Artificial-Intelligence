@@ -29,11 +29,14 @@ public class App {
             datasetNames.put(dataset, FileHandler.getTextFileNames(dataset));
         }
 
-        // Run the ILS algorithm on each dataset
+        // Run the ILS and TabuSearch algorithms on each dataset
         for (String dataset : datasets) {
             System.out.println("Dataset: " + dataset);
             ILS ils = new ILS(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
             ils.run();
+
+            TabuSearch ts = new TabuSearch(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
+            ts.run();
         }
 
         FileHandler.printOverallPerformance("ILS");
