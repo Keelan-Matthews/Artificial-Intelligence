@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -52,7 +51,7 @@ public class ILS {
 
 
         // Generate initial solution
-        List<List<Integer>> currentSolution = getInitialSolution();
+        List<List<Integer>> currentSolution = HelperFunctions.getInitialSolution(values, MAX_CAPACITY);
         // Set it as the best solution
         List<List<Integer>> bestSolution = currentSolution;
 
@@ -76,24 +75,6 @@ public class ILS {
         int timeToComplete = endTime - startTime;
         testResults.add(new int[] { timeToComplete, bestSolution.size(), optimalSolution });
         FileHandler.writeData(dataset, timeToComplete, bestSolution, index, optimalSolution, "ILS", testNames[index]);
-    }
-
-    /**
-     * Generate an initial solution by adding items to bins using the best fit algorithm
-     * @return
-     */
-    private List<List<Integer>> getInitialSolution() {
-        Arrays.sort(values);
-        HelperFunctions.reverse(values);
-
-        List<List<Integer>> solution = new ArrayList<>();
-
-        // Add items to bins using the best fit function
-        for (int item : values) {
-            solution = bestFit(solution, item);
-        }
-
-        return solution;
     }
 
     /**
@@ -139,19 +120,10 @@ public class ILS {
 
         // Pack the removed items into new bins using the best fit algorithm
         for (int item : removedItems) {
-            perturbedSolution = bestFit(perturbedSolution, item);
+            perturbedSolution = HelperFunctions.bestFit(perturbedSolution, item, MAX_CAPACITY);
         }
 
         return perturbedSolution;
-    }
-
-    private int calculateRemainingCapacity(List<Integer> bin) {
-        // Calculate remaining capacity of a bin
-        int remainingCapacity = MAX_CAPACITY;
-        for (int item : bin) {
-            remainingCapacity -= item;
-        }
-        return remainingCapacity;
     }
 
     /**
@@ -182,14 +154,14 @@ public class ILS {
                     boolean itemRemoved = false;
 
                     // Try to remove the item from the bin
-                    if (item <= calculateRemainingCapacity(localSearchSolution.get(i))) {
+                    if (item <= HelperFunctions.calculateRemainingCapacity(localSearchSolution.get(i), MAX_CAPACITY)) {
                         localSearchSolution.get(i).remove(j);
                         itemRemoved = true;
                     }
 
                     // Try to add the item to another bin using best fit
                     if (itemRemoved) {
-                        localSearchSolution = bestFit(localSearchSolution, item);
+                        localSearchSolution = HelperFunctions.bestFit(localSearchSolution, item, MAX_CAPACITY);
                     }
 
                     // If the solution has improved, set improved to true
@@ -206,36 +178,5 @@ public class ILS {
             }
         }
         return localSearchSolution;
-    }
-
-    /**
-     * Finds the bin with the smallest remaining capacity that can fit the item
-     * @param solution
-     * @param item
-     * @return
-     */
-    private List<List<Integer>> bestFit(List<List<Integer>> solution, int item) {
-        int bestBinIndex = -1;
-        int bestBinRemainingCapacity = MAX_CAPACITY;
-
-        for (int i = 0; i < solution.size(); i++) {
-            int remainingCapacity = calculateRemainingCapacity(solution.get(i));
-            // If the item fits in the bin and the bin has the smallest remaining capacity
-            if (item <= remainingCapacity && remainingCapacity < bestBinRemainingCapacity) {
-                bestBinIndex = i;
-                bestBinRemainingCapacity = remainingCapacity;
-            }
-        }
-
-        // If no bin can fit the item, create a new bin
-        if (bestBinIndex == -1) {
-            solution.add(new ArrayList<>());
-            bestBinIndex = solution.size() - 1;
-        }
-
-        // Add the item to the bin
-        solution.get(bestBinIndex).add(item);
-
-        return solution;
     }
 }

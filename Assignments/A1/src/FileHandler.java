@@ -12,8 +12,10 @@ public class FileHandler {
     private static String nl = System.getProperty("line.separator");
 
     private static List<Integer[]> performanceValuesILS = new ArrayList<>();
+    private static List<Double> performanceTimesILS = new ArrayList<>();
     private static List<String> performanceValueNamesILS = new ArrayList<>();
     private static List<Integer[]> performanceValuesTS = new ArrayList<>();
+    private static List<Double> performanceTimesTS = new ArrayList<>();
     private static List<String> performanceValueNamesTS = new ArrayList<>();
 
     
@@ -103,7 +105,7 @@ public class FileHandler {
                 numNearOptimalSolutions++;
             }
         }
-        float averageTime = totalTime / totalTests;
+        double averageTime = totalTime / totalTests;
         averageTime = Math.round(averageTime * 100.0f) / 100.0f;
 
         // Print the summary to a new tset file called Summary.txt
@@ -131,9 +133,11 @@ public class FileHandler {
             if (algorithm == "ILS") {
                 performanceValuesILS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
                 performanceValueNamesILS.add(path);
+                performanceTimesILS.add(averageTime);
             } else {
                 performanceValuesTS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
                 performanceValueNamesTS.add(path);
+                performanceTimesTS.add(averageTime);
             }
 
         } catch (IOException e) {
@@ -177,12 +181,15 @@ public class FileHandler {
 
             List<Integer[]> performanceValues = algorithm == "ILS" ? performanceValuesILS : performanceValuesTS;
             List<String> performanceValueNames = algorithm == "ILS" ? performanceValueNamesILS : performanceValueNamesTS;
+            List<Double> performanceTimes = algorithm == "ILS" ? performanceTimesILS : performanceTimesTS;
             
             // Print the summary for each entry in the hashmap
             for (int i = 0; i < performanceValueNames.size(); i++) {
                 writer.write("Dataset: " + performanceValueNames.get(i));
                 writer.write(nl);
                 writer.write("Optimal: " + performanceValues.get(i)[0] + " | Near: " + performanceValues.get(i)[1] + " | Sum: " + performanceValues.get(i)[2]);
+                writer.write(nl);
+                writer.write("Average time: " + performanceTimes.get(i) + "ms");
                 writer.write(nl);
                 writer.write("---------------------------------------");
                 writer.write(nl);

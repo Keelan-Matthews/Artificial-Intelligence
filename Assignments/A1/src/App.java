@@ -39,6 +39,8 @@ public class App {
             ts.run();
         }
 
+        // Print the overall performance of the algorithms
         FileHandler.printOverallPerformance("ILS");
+        FileHandler.printOverallPerformance("TabuSearch");
     }
 }

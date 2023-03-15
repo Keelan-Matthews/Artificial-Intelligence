@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -36,6 +37,77 @@ public class HelperFunctions {
             }
             System.out.println("]");
         }
+    }
+
+    public static boolean compareSolutions(List<List<Integer>> solution1, List<List<Integer>> solution2) {
+        if (solution1.size() != solution2.size())
+            return false;
+
+        for (int i = 0; i < solution1.size(); i++) {
+            if (solution1.get(i).size() != solution2.get(i).size())
+                return false;
+
+            for (int j = 0; j < solution1.get(i).size(); j++) {
+                if (solution1.get(i).get(j) != solution2.get(i).get(j))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static List<List<Integer>> getInitialSolution(int[] values, int MAX_CAPACITY) {
+        Arrays.sort(values);
+        HelperFunctions.reverse(values);
+
+        List<List<Integer>> solution = new ArrayList<>();
+
+        // Add items to bins using the best fit function
+        for (int item : values) {
+            solution = HelperFunctions.bestFit(solution, item, MAX_CAPACITY);
+        }
+
+        return solution;
+    }
+
+    public static int calculateRemainingCapacity(List<Integer> bin, int MAX_CAPACITY) {
+        // Calculate remaining capacity of a bin
+        int remainingCapacity = MAX_CAPACITY;
+        for (int item : bin) {
+            remainingCapacity -= item;
+        }
+        return remainingCapacity;
+    }
+
+    /**
+     * Finds the bin with the smallest remaining capacity that can fit the item
+     * @param solution
+     * @param item
+     * @return
+     */
+    public static List<List<Integer>> bestFit(List<List<Integer>> solution, int item, int MAX_CAPACITY) {
+        int bestBinIndex = -1;
+        int bestBinRemainingCapacity = MAX_CAPACITY;
+
+        for (int i = 0; i < solution.size(); i++) {
+            int remainingCapacity = HelperFunctions.calculateRemainingCapacity(solution.get(i), MAX_CAPACITY);
+            // If the item fits in the bin and the bin has the smallest remaining capacity
+            if (item <= remainingCapacity && remainingCapacity < bestBinRemainingCapacity) {
+                bestBinIndex = i;
+                bestBinRemainingCapacity = remainingCapacity;
+            }
+        }
+
+        // If no bin can fit the item, create a new bin
+        if (bestBinIndex == -1) {
+            solution.add(new ArrayList<>());
+            bestBinIndex = solution.size() - 1;
+        }
+
+        // Add the item to the bin
+        solution.get(bestBinIndex).add(item);
+
+        return solution;
     }
 
     public static void reverse(int[] arr) {

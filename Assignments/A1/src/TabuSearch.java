@@ -1,10 +1,14 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TabuSearch {
     private int MAX_ITERATIONS; // The maximum number of iterations to run the algorithm for
+    private int MAX_TABU_SIZE; // The maximum size of the tabu list
     private int MAX_CAPACITY; // The maximum capacity of each bin
 
+    private Random random;
+    
     private String dataset; // The name of the dataset
     private List<int[]> testResults; // A list of the results of each test
     private List<int[]> tests; // A list of the tests to run
@@ -17,6 +21,7 @@ public class TabuSearch {
         this.testNames = testNames;
 
         testResults = new ArrayList<>();
+        random = new Random();
     }
 
     public void run() {
@@ -35,6 +40,7 @@ public class TabuSearch {
 
         MAX_CAPACITY = v[1];
         MAX_ITERATIONS = v[1];
+        MAX_TABU_SIZE = v[0];
 
         // Remove the first two values from the array, as they are not part of the values
         // to be packed
@@ -44,92 +50,98 @@ public class TabuSearch {
         }
         this.values = temp;
 
-        // Generate initial solution
-        List<List<Integer>> currentSolution = getInitialSolution();
-        // Set it as the best solution
+        // Get the initial solution
+        List<List<Integer>> currentSolution = HelperFunctions.getInitialSolution(values, MAX_CAPACITY);
+        // Get the initial best solution
         List<List<Integer>> bestSolution = currentSolution;
+        // Create the tabu list
+        List<List<List<Integer>>> tabuList = new ArrayList<>();
 
         // Run the algorithm for a maximum number of iterations
         for (int i = 0; i < MAX_ITERATIONS; i++) {
-            // Generate a neighbour solution
-            List<List<Integer>> neighbourSolution = getNeighbourSolution(currentSolution);
-            // If the neighbour solution is better than the current solution, set it as the
-            // current solution
-            if (HelperFunctions.getSolutionCost(neighbourSolution) < HelperFunctions.getSolutionCost(currentSolution)) {
-                currentSolution = neighbourSolution;
-            }
-            // If the neighbour solution is better than the best solution, set it as the best
-            // solution
-            if (HelperFunctions.getSolutionCost(neighbourSolution) < HelperFunctions.getSolutionCost(bestSolution)) {
-                bestSolution = neighbourSolution;
+            // Perturb the current solution
+            List<List<Integer>> newSolution = perturb(currentSolution);
+
+            // See if the new solution is tabu
+            if (!isTabu(newSolution, tabuList)) {
+                // If it is not tabu, see if it is better than the current best solution
+                if (newSolution.size() < bestSolution.size()) {
+                    // If it is better, set it as the new best solution
+                    bestSolution = newSolution;
+                }
+                // Set the new solution as the current solution
+                currentSolution = newSolution;
+                // Update the tabu list
+                updateTabuList(newSolution, tabuList);
             }
         }
 
-        // Print the results
+
+
         int endTime = (int) System.currentTimeMillis();
-        int timeTaken = endTime - startTime;
-        int solutionCost = HelperFunctions.getSolutionCost(bestSolution);
-        int solutionSize = bestSolution.size();
-        int solutionQuality = HelperFunctions.getSolutionQuality(solutionCost, optimalSolution);
-        int[] result = { solutionCost, solutionSize, solutionQuality, timeTaken };
-        testResults.add(result);
+        int timeToComplete = endTime - startTime;
+        testResults.add(new int[] { timeToComplete, bestSolution.size(), optimalSolution });
+        FileHandler.writeData(dataset, timeToComplete, bestSolution, index, optimalSolution, "TabuSearch", testNames[index]);
     }
 
-    private List<List<Integer>> getInitialSolution() {
-        List<List<Integer>> solution = new ArrayList<>();
-        List<Integer> bin = new ArrayList<>();
-        int binCapacity = 0;
-
-        for (int i = 0; i < values.length; i++) {
-            // If the value can fit in the bin, add it to the bin
-            if (binCapacity + values[i] <= MAX_CAPACITY) {
-                bin.add(values[i]);
-                binCapacity += values[i];
-            }
-            // If the value cannot fit in the bin, add the bin to the solution and create a
-            // new bin
-            else {
-                solution.add(bin);
-                bin = new ArrayList<>();
-                bin.add(values[i]);
-                binCapacity = values[i];
+    private boolean isTabu(List<List<Integer>> solution, List<List<List<Integer>>> tabuList) {
+        for (List<List<Integer>> tabuSolution : tabuList) {
+            if (HelperFunctions.compareSolutions(solution, tabuSolution)) {
+                return true;
             }
         }
-        // Add the last bin to the solution
-        solution.add(bin);
-
-        return solution;
+        return false;
     }
 
-    private List<List<Integer>> getNeighbourSolution(List<List<Integer>> solution) {
-        List<List<Integer>> neighbourSolution = new ArrayList<>();
-        List<Integer> bin = new ArrayList<>();
-        int binCapacity = 0;
+    private void updateTabuList(List<List<Integer>> solution, List<List<List<Integer>>> tabuList) {
+        // If the tabu list is full, remove the first solution
+        if (tabuList.size() == MAX_TABU_SIZE) {
+            tabuList.remove(0);
+        }
+        // Add the new solution to the tabu list
+        tabuList.add(solution);
+    }
 
-        // For each bin in the solution
-        for (int i = 0; i < solution.size(); i++) {
-            // For each value in the bin
-            for (int j = 0; j < solution.get(i).size(); j++) {
-                // If the value can fit in the bin, add it to the bin
-                if (binCapacity + solution.get(i).get(j) <= MAX_CAPACITY) {
-                    bin.add(solution.get(i).get(j));
-                    binCapacity += solution.get(i).get(j);
-                }
-                // If the value cannot fit in the bin, add the bin to the solution and create a
-                // new bin
-                else {
-                    neighbourSolution.add(bin);
-                    bin = new ArrayList<>();
-                    bin.add(solution.get(i).get(j));
-                    binCapacity = solution.get(i).get(j);
-                }
-            }
-            // Add the last bin to the solution
-            neighbourSolution.add(bin);
+    private List<List<Integer>> perturb(List<List<Integer>> solution) {
+        List<List<Integer>> perturbedSolution = new ArrayList<>();
+
+        // Deep copy the solution
+        for (List<Integer> bin : solution) {
+            perturbedSolution.add(new ArrayList<>(bin));
         }
 
-        return neighbourSolution;
-    }
+        // Randomly remove half of the items from their bins
+        int numItemsToRemove = solution.size() / 2;
+        List<Integer> removedItems = new ArrayList<>();
 
+        while (numItemsToRemove > 0) {
+            // Randomly select a bin
+            int binIndex = random.nextInt(perturbedSolution.size());
 
+            // Make sure the bin is not empty
+            if (!perturbedSolution.get(binIndex).isEmpty()) {
+                // Randomly select an item from the bin
+                int itemIndex = random.nextInt(perturbedSolution.get(binIndex).size());
+                int item = perturbedSolution.get(binIndex).get(itemIndex);
+
+                // Remove the item from the bin
+                perturbedSolution.get(binIndex).remove(itemIndex);
+                removedItems.add(item);
+
+                // If the bin is now empty, remove it
+                if (perturbedSolution.get(binIndex).isEmpty()) {
+                    perturbedSolution.remove(binIndex);
+                }
+
+                numItemsToRemove--;
+            }
+        }
+
+        // Pack the removed items into new bins using the best fit algorithm
+        for (int item : removedItems) {
+            perturbedSolution = HelperFunctions.bestFit(perturbedSolution, item, MAX_CAPACITY);
+        }
+
+        return perturbedSolution;
+    } 
 }
