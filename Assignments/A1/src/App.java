@@ -30,20 +30,19 @@ public class App {
         }
 
         // Run the ILS and TabuSearch algorithms on each dataset
-        // for (String dataset : datasets) {
-        //     System.out.println("Dataset: " + dataset);
-        //     ILS ils = new ILS(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
-        //     ils.run();
-
-        //     TabuSearch ts = new TabuSearch(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
-        //     ts.run();
-        // }
-
-            ILS ils = new ILS(datasets[5], datasetValues.get(datasets[5]), datasetNames.get(datasets[5]));
+        for (String dataset : datasets) {
+            System.out.println("Dataset: " + dataset);
+            ILS ils = new ILS(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
             ils.run();
 
+            TabuSearch ts = new TabuSearch(dataset, datasetValues.get(dataset), datasetNames.get(dataset));
+            ts.run();
+        }
+
+
+
         // Print the overall performance of the algorithms
-        // FileHandler.printOverallPerformance("ILS");
-        // FileHandler.printOverallPerformance("TabuSearch");
+        FileHandler.printOverallPerformance("ILS");
+        FileHandler.printOverallPerformance("TabuSearch");
     }
 }
