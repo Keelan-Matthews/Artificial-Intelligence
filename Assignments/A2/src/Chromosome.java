@@ -7,7 +7,6 @@ public class Chromosome implements Comparable<Chromosome> {
     public int[] genes; 
     public int fitness;
     public static final double MUTATION_RATE = 0.05;
-    public static final int KNAPSACK_CAPACITY = 165;
     private Knapsack knapsack;
 
     public Chromosome(int[] genes, Knapsack knapsack) {
