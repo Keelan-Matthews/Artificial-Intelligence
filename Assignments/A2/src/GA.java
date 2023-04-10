@@ -3,31 +3,37 @@ import java.util.Collections;
 import java.util.Random;
 
 public class GA {
-    public static final int TOURNAMENT_SIZE = 5;
-    public static final int MAX_GENERATIONS = 1000;
-    public static final int POPULATION_SIZE = 100;
-    private Knapsack knapsack = Knapsack.getInstance();
+    public static final int TOURNAMENT_SIZE = 5; // The number of chromosomes in the tournament
+    public static final int MAX_GENERATIONS = 1000; // The maximum number of generations
+    public static final int POPULATION_SIZE = 100; // The number of chromosomes in the population
+    private Knapsack knapsack;
+
+    public GA(String instanceName) {
+        knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
+    }
 
     // This is the main method that will be called when the program is run
     public void run() {
         // Create the initial population, i.e. number of chromosomes
         ArrayList<Chromosome> population = new ArrayList<>();
+
         for (int i = 0; i < POPULATION_SIZE; i++) {
             // Generate a random set of genes from the knapsack for each chromosome
             int[] genes = knapsack.getGenes();
-            population.add(new Chromosome(genes));
+            population.add(new Chromosome(genes, knapsack));
         }
 
         // Evolve the population
         for (int i = 0; i < MAX_GENERATIONS; i++) {
             population = evolvePopulation(population);
-
             // Print the best solution found so far
             System.out.println("Generation " + i + ": Best fitness = " + population.get(0).fitness);
-        }
 
-        // Sort the population by fitness and keep the best individuals
-        Collections.sort(population);
+            // If the best solution found so far is the optimal solution, then stop
+            if (population.get(0).fitness == knapsack.getKnownOptimum()) {
+                break;
+            }
+        }
     }
 
     /**

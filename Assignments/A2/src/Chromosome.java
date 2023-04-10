@@ -8,11 +8,16 @@ public class Chromosome implements Comparable<Chromosome> {
     public int fitness;
     public static final double MUTATION_RATE = 0.05;
     public static final int KNAPSACK_CAPACITY = 165;
-    private Knapsack knapsack = Knapsack.getInstance();
+    private Knapsack knapsack;
+
+    public Chromosome(int[] genes, Knapsack knapsack) {
+        this.knapsack = knapsack;
+        this.genes = genes;
+        this.fitness = knapsack.getFitness(genes);
+    }
 
     public Chromosome(int[] genes) {
         this.genes = genes;
-        this.fitness = knapsack.getFitness(genes);
     }
 
     /**

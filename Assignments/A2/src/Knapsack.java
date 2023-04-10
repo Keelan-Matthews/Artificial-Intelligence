@@ -1,28 +1,25 @@
 import java.util.Random;
 
+/*
+ * This class represents a single knapsack problem and is given it's values from 
+ * the KnapsackInstances class
+ */
 public class Knapsack {
-    // This class is a Singleton that allows the other classes to access the items and knapsack capacity
-    private static Knapsack instance = null;
     private static int[] ITEM_VALUES;
     private static int[] ITEM_WEIGHTS;
     private static int KNAPSACK_CAPACITY;
+    private double knownOptimum;
 
-    private Knapsack() {
-    }
-
-    /**
-     * Turn the class into a Singleton by only allowing one instance of the class to be created
-     * @return the instance of the class
-     */
-    public static Knapsack getInstance() {
-        if (instance == null) {
-            instance = new Knapsack();
-        }
-        return instance;
+    public Knapsack(int[] itemValues, int[] itemWeights, int knapsackCapacity, double knownOptimum) {
+        ITEM_VALUES = itemValues;
+        ITEM_WEIGHTS = itemWeights;
+        KNAPSACK_CAPACITY = knapsackCapacity;
+        this.knownOptimum = knownOptimum;
     }
 
     /**
      * Get the total value of the items in the knapsack for the given genes
+     * 
      * @param genes
      * @return the total value of the items in the knapsack for the given genes
      */
@@ -39,6 +36,7 @@ public class Knapsack {
 
     /**
      * Get the total weight of the items in the knapsack for the given genes
+     * 
      * @param genes
      * @return the total weight of the items in the knapsack for the given genes
      */
@@ -54,8 +52,10 @@ public class Knapsack {
     }
 
     /**
-     * Get the fitness of the chromosome by calculating the total value of the items in the knapsack
+     * Get the fitness of the chromosome by calculating the total value of the items
+     * in the knapsack
      * using the genes of the chromosome
+     * 
      * @param genes
      * @return the total value of the items in the knapsack
      */
@@ -72,6 +72,7 @@ public class Knapsack {
 
     /**
      * Generate a random set of genes
+     * 
      * @return the randomly generated genes
      */
     public int[] getGenes() {
@@ -99,5 +100,9 @@ public class Knapsack {
 
     public int getNumberOfItems() {
         return ITEM_VALUES.length;
+    }
+
+    public double getKnownOptimum() {
+        return knownOptimum;
     }
 }
