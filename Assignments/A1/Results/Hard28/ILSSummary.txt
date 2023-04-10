@@ -1,6 +1,6 @@
 Hard28
 
-Average time to complete: 47.0ms
+Average time to complete: 46.0ms
 Opt: 5
 Opt-1: 23
 Sum: 28
