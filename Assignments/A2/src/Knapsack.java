@@ -10,6 +10,7 @@ public class Knapsack {
     private static int[] ITEM_WEIGHTS;
     private static int KNAPSACK_CAPACITY;
     private double knownOptimum;
+    private boolean isDouble;
 
     public Knapsack(ArrayList<Integer> itemValues, ArrayList<Integer> itemWeights, int knapsackCapacity, double knownOptimum, int size) {
         ITEM_VALUES = new int[size];

@@ -33,6 +33,30 @@ public class FileHandler {
         return itemValues;
     }
 
+    // Overload getValues to deal with doubles
+    public static ArrayList<Double> getValues(String instanceName, boolean isDouble) {
+        ArrayList<Double> itemValues = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Each line has two numbers separated by a space,
+                // the first number is the weight of the item and the second number is the value of the item.
+                // The first line is different as the first number is the number of items in the file,
+                // and the second number is the capacity of the knapsack (on the same line)
+                String[] numbers = line.split(" ");
+
+                itemValues.add(Double.parseDouble(numbers[0]));
+            }
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
+
+        // Remove the first value as it is the number of items in the file
+        itemValues.remove(0);
+
+        return itemValues;
+    }
+
     public static ArrayList<Integer> getWeights(String instanceName) {
         ArrayList<Integer> itemWeights = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
@@ -96,11 +120,11 @@ public class FileHandler {
      * @param bestSolution
      * @param timeTaken
      */
-    public static void writeData(String instanceName, int bestSolution, float timeTaken) {
+    public static void writeData(String instanceName, int bestSolution, float timeTaken, String algorithm) {
         // Write a new text file with the instance name to the results path
 
         // Result directory
-        String directory = resultsPath + instanceName + ".txt";
+        String directory = resultsPath + algorithm + "/" + instanceName + ".txt";
 
         // Retrieve known optimum solution
         double knownOptimum = KnapsackInstances.getOptimum(instanceName);

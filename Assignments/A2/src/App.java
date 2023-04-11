@@ -17,8 +17,6 @@ public class App {
         GA ga = new GA();
 
         for (String instanceName : instanceNames) {
-            if (instanceName.equals("f5_l-d_kp_15_375")) continue; // stupid double precision
-
             float startTime = System.nanoTime();
             int bestSolution = ga.run(instanceName);
             float endTime = System.nanoTime();
@@ -28,7 +26,7 @@ public class App {
             totalTime = Math.round(totalTime * 100) / 100f;
 
             // Write the results to a file
-            FileHandler.writeData(instanceName, bestSolution, totalTime);
+            FileHandler.writeData(instanceName, bestSolution, totalTime, "GA");
 
             System.out.println("Instance: " + instanceName);
             System.out.println("Best solution: " + bestSolution);

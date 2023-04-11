@@ -31,7 +31,7 @@ public class KnapsackInstances {
         knownOptimums.put("f2_l-d_kp_20_878", 1024.0);
         knownOptimums.put("f3_l-d_kp_4_20", 35.0);
         knownOptimums.put("f4_l-d_kp_4_11", 23.0);
-        // knownOptimums.put("f5_l-d_kp_15_375", 481.0694);
+        knownOptimums.put("f5_l-d_kp_15_375", 481.0694);
         knownOptimums.put("f6_l-d_kp_10_60", 52.0);
         knownOptimums.put("f7_l-d_kp_7_50", 107.0);
         knownOptimums.put("f8_l-d_kp_23_10000", 9767.0);
