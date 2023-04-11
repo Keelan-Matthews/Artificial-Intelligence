@@ -1,0 +1,2 @@
+Best Solution: 22.0 | Opt: 35.0
+Time Taken: 0.27s
