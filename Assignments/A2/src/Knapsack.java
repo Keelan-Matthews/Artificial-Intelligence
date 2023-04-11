@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 /*
@@ -10,9 +11,13 @@ public class Knapsack {
     private static int KNAPSACK_CAPACITY;
     private double knownOptimum;
 
-    public Knapsack(int[] itemValues, int[] itemWeights, int knapsackCapacity, double knownOptimum) {
-        ITEM_VALUES = itemValues;
-        ITEM_WEIGHTS = itemWeights;
+    public Knapsack(ArrayList<Integer> itemValues, ArrayList<Integer> itemWeights, int knapsackCapacity, double knownOptimum, int size) {
+        ITEM_VALUES = new int[size];
+        ITEM_WEIGHTS = new int[size];
+        for (int i = 0; i < itemValues.size(); i++) {
+            ITEM_VALUES[i] = itemValues.get(i);
+            ITEM_WEIGHTS[i] = itemWeights.get(i);
+        }
         KNAPSACK_CAPACITY = knapsackCapacity;
         this.knownOptimum = knownOptimum;
     }

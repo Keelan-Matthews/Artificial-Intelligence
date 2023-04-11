@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 
 // Define the class that represents a chromosome in the population
@@ -13,10 +14,6 @@ public class Chromosome implements Comparable<Chromosome> {
         this.knapsack = knapsack;
         this.genes = genes;
         this.fitness = knapsack.getFitness(genes);
-    }
-
-    public Chromosome(int[] genes) {
-        this.genes = genes;
     }
 
     /**
@@ -46,7 +43,7 @@ public class Chromosome implements Comparable<Chromosome> {
         for (int i = crossoverPoint; i < genes.length; i++) {
             childGenes[i] = other.genes[i];
         }
-        return new Chromosome(childGenes);
+        return new Chromosome(childGenes, knapsack);
     }
 
     
@@ -60,7 +57,12 @@ public class Chromosome implements Comparable<Chromosome> {
         }
 
         // Update the fitness of the chromosome
-        fitness = knapsack.getFitness(genes);
+        fitness = this.knapsack.getFitness(genes);
+    }
+
+    // Print methods
+    public void print() {
+        System.out.println("Chromosome: " + Arrays.toString(genes) + " Fitness: " + fitness);
     }
 }
 

@@ -15,11 +15,15 @@ public class App {
             "f10_l-d_kp_20_879"
         };
 
-        for (String instanceName : instanceNames) {
-            // Run the Genetic Algorithm to solve the knapsack problem for the given instance
-            GA ga = new GA(instanceName);
-            ga.run();
-        }
+        GA ga = new GA();
+
+        ga.run("f1_l-d_kp_10_269");
+
+        // for (String instanceName : instanceNames) {
+        //     if (instanceName.equals("f5_l-d_kp_15_375")) break; // stupid double precision
+        //     // Run the Genetic Algorithm to solve the knapsack problem for the given instance
+        //     ga.run(instanceName);
+        // }
 
     }
 }

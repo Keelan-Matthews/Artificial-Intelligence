@@ -3,17 +3,30 @@ import java.util.Collections;
 import java.util.Random;
 
 public class GA {
-    public static final int TOURNAMENT_SIZE = 5; // The number of chromosomes in the tournament
-    public static final int MAX_GENERATIONS = 1000; // The maximum number of generations
-    public static final int POPULATION_SIZE = 100; // The number of chromosomes in the population
+    public static int TOURNAMENT_SIZE; // The number of chromosomes in the tournament
+    public static int MAX_GENERATIONS; // The maximum number of generations
+    public static int POPULATION_SIZE; // The number of chromosomes in the population
     private Knapsack knapsack;
 
-    public GA(String instanceName) {
-        knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
+    public GA() {
     }
 
     // This is the main method that will be called when the program is run
-    public void run() {
+    public void run(String instanceName) {
+        knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
+        POPULATION_SIZE = knapsack.getNumberOfItems();
+        MAX_GENERATIONS = 1000;
+        TOURNAMENT_SIZE = knapsack.getNumberOfItems() / 4;
+
+        // Print out the stats for this knapsack
+        System.out.println("Instance: " + instanceName);
+        System.out.println("Number of items: " + knapsack.getNumberOfItems());
+        System.out.println("Knapsack capacity: " + knapsack.getKnapsackCapacity());
+        System.out.println("Known optimum: " + knapsack.getKnownOptimum());
+        System.out.println("Population size: " + POPULATION_SIZE);
+        System.out.println("Max generations: " + MAX_GENERATIONS);
+        System.out.println("Tournament size: " + TOURNAMENT_SIZE);
+
         // Create the initial population, i.e. number of chromosomes
         ArrayList<Chromosome> population = new ArrayList<>();
 
@@ -27,7 +40,7 @@ public class GA {
         for (int i = 0; i < MAX_GENERATIONS; i++) {
             population = evolvePopulation(population);
             // Print the best solution found so far
-            System.out.println("Generation " + i + ": Best fitness = " + population.get(0).fitness);
+            System.out.println("Generation " + i + ": Best fitness = " + population.get(0).fitness + ", Opt: " + knapsack.getKnownOptimum());
 
             // If the best solution found so far is the optimal solution, then stop
             if (population.get(0).fitness == knapsack.getKnownOptimum()) {
@@ -70,16 +83,15 @@ public class GA {
             childChromosomes.add(child2);
         }
 
-
         // A BIT IFFY HERE
         // Sort the population by fitness and keep the best individuals
-        Collections.sort(population);
+        // Collections.sort(population);
         Collections.sort(childChromosomes);
 
         // Add the best individuals from the previous generation to the new generation
-        for (int i = 0; i < POPULATION_SIZE / 2; i++) {
-            childChromosomes.set(i, population.get(i));
-        }
+        // for (int i = 0; i < POPULATION_SIZE / 2; i++) {
+        //     childChromosomes.set(i, population.get(i));
+        // }
 
         return childChromosomes;
     }
@@ -102,5 +114,14 @@ public class GA {
         // Sort the tournament by fitness and return the best individual
         Collections.sort(tournament);
         return tournament.get(0);
+    }
+
+    // This method prints out the population in a nice format
+    private static void printPopulation(ArrayList<Chromosome> population) {
+        System.out.println("Population: ");
+        for (Chromosome chromosome : population) {
+            chromosome.print();
+        }
+        System.out.println();
     }
 }
