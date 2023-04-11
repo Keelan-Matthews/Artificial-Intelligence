@@ -1,2 +1,2 @@
 Best Solution: 399.142429 | Opt: 481.0694
-Time Taken: 3.36s
+Time Taken: 0.94s

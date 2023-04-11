@@ -52,10 +52,8 @@ public class ACO {
             for (int j = 0; j < numAnts; j++) {
                 solutions[j] = generateSolution();
             }
-
             // Update pheromone matrix
             updatePheromones(solutions);
-
             // Update best solution
             updateBestSolution(solutions);
 
