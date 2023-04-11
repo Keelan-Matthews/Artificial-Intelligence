@@ -34,7 +34,6 @@ public class KnapsackInstances {
         // knownOptimums.put("f5_l-d_kp_15_375", 481.0694);
         knownOptimums.put("f6_l-d_kp_10_60", 52.0);
         knownOptimums.put("f7_l-d_kp_7_50", 107.0);
-        // knownOptimums.put("knapPI_1_100_1000_1", 9147.0);
         knownOptimums.put("f8_l-d_kp_23_10000", 9767.0);
         knownOptimums.put("f9_l-d_kp_5_80", 130.0);
         knownOptimums.put("f10_l-d_kp_20_879", 1025.0);
@@ -82,6 +81,10 @@ public class KnapsackInstances {
     }
 
     public double getKnownOptimum(String instanceName) {
+        return knownOptimums.get(instanceName);
+    }
+
+    public static double getOptimum(String instanceName) {
         return knownOptimums.get(instanceName);
     }
 }

@@ -12,20 +12,12 @@ public class GA {
     }
 
     // This is the main method that will be called when the program is run
-    public void run(String instanceName) {
+    public int run(String instanceName) {
         knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
         POPULATION_SIZE = knapsack.getNumberOfItems();
         MAX_GENERATIONS = 1000;
         TOURNAMENT_SIZE = knapsack.getNumberOfItems() / 4;
-
-        // Print out the stats for this knapsack
-        System.out.println("Instance: " + instanceName);
-        System.out.println("Number of items: " + knapsack.getNumberOfItems());
-        System.out.println("Knapsack capacity: " + knapsack.getKnapsackCapacity());
-        System.out.println("Known optimum: " + knapsack.getKnownOptimum());
-        System.out.println("Population size: " + POPULATION_SIZE);
-        System.out.println("Max generations: " + MAX_GENERATIONS);
-        System.out.println("Tournament size: " + TOURNAMENT_SIZE);
+        int bestSolution = 0;
 
         // Create the initial population, i.e. number of chromosomes
         ArrayList<Chromosome> population = new ArrayList<>();
@@ -39,14 +31,18 @@ public class GA {
         // Evolve the population
         for (int i = 0; i < MAX_GENERATIONS; i++) {
             population = evolvePopulation(population);
-            // Print the best solution found so far
-            System.out.println("Generation " + i + ": Best fitness = " + population.get(0).fitness + ", Opt: " + knapsack.getKnownOptimum());
+
+            if (bestSolution < population.get(0).fitness) {
+                bestSolution = population.get(0).fitness;
+            }
 
             // If the best solution found so far is the optimal solution, then stop
-            if (population.get(0).fitness == knapsack.getKnownOptimum()) {
+            if (bestSolution == knapsack.getKnownOptimum()) {
                 break;
             }
         }
+
+        return bestSolution;
     }
 
     /**

@@ -91,109 +91,33 @@ public class FileHandler {
     }
 
     /**
-     * Writes the results of the algorithm to a text file
-     * @param path
-     * @param timeToComplete
-     * @param numBins
+     * Write the results of the algorithm to a text file
+     * @param instanceName
+     * @param bestSolution
+     * @param timeTaken
      */
-    public static void writeData(String instanceName, double optimum, float timeTaken) {
+    public static void writeData(String instanceName, int bestSolution, float timeTaken) {
+        // Write a new text file with the instance name to the results path
 
+        // Result directory
+        String directory = resultsPath + instanceName + ".txt";
+
+        // Retrieve known optimum solution
+        double knownOptimum = KnapsackInstances.getOptimum(instanceName);
+
+        try {
+            File file = new File(directory);
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file);
+            writer.write("Best Solution: " + bestSolution + " | Opt: " + knownOptimum);
+            writer.write(nl);
+            writer.write("Time Taken: " + timeTaken + "s");
+            writer.write(nl);
+            writer.close();
+        }
+        catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
     }
-
-    // public static void printSummary(List<int[]> testResults, String path, String algorithm) {
-    //     // The first value in the integer array is the time to complete the test,
-    //     // Get the average time to complete all the tests in the list
-    //     int totalTime = 0;
-    //     int totalTests = testResults.size();
-
-    //     // The second value in the integer array is the number of bins used,
-    //     // Get the total number of tests where the number of bins used equals the optimal solution (third value in the integer array)
-    //     int numOptimalSolutions = 0;
-
-    //     // Get the total number of tests where the number of bins used is within 1 of the optimal solution
-    //     int numNearOptimalSolutions = 0;
-
-    //     for (int[] testResult : testResults) {
-    //         totalTime += testResult[0];
-
-    //         if (testResult[1] == testResult[2]) {
-    //             numOptimalSolutions++;
-    //         }
-
-    //         if (testResult[1] == testResult[2] + 1) {
-    //             numNearOptimalSolutions++;
-    //         }
-    //     }
-    //     double averageTime = totalTime / totalTests;
-    //     averageTime = Math.round(averageTime * 100.0f) / 100.0f;
-
-    //     // Print the summary to a new tset file called Summary.txt
-    //     try {
-    //         String filename = algorithm == "ILS" ? "/ILSSummary.txt" : "/TabuSummary.txt";
-    //         String directory = resultsPath + path + filename;
-    //         File file = new File(directory);
-    //         file.createNewFile();
-
-    //         FileWriter writer = new FileWriter(file);
-    //         writer.write(path);
-    //         writer.write(nl);
-    //         writer.write(nl);
-    //         writer.write("Average time to complete: " + averageTime + "ms");
-    //         writer.write(nl);
-    //         writer.write("Opt: " + numOptimalSolutions);
-    //         writer.write(nl);
-    //         writer.write("Opt-1: " + numNearOptimalSolutions);
-    //         writer.write(nl);
-    //         writer.write("Sum: " + totalTests);
-    //         writer.close();
-    //         System.out.println("Successfully wrote to " + directory);
-
-    //         // Add the summary to the hashmap
-    //         if (algorithm == "ILS") {
-    //             performanceValuesILS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
-    //             performanceValueNamesILS.add(path);
-    //             performanceTimesILS.add(averageTime);
-    //         } else {
-    //             performanceValuesTS.add(new Integer[] {numOptimalSolutions, numNearOptimalSolutions, totalTests});
-    //             performanceValueNamesTS.add(path);
-    //             performanceTimesTS.add(averageTime);
-    //         }
-
-    //     } catch (IOException e) {
-    //         System.err.format("IOException: %s%n", e);
-    //     }
-    // }
-
-    // public static void printOverallPerformance(String algorithm) {
-    //     String folder = algorithm == "ILS" ? "ILSPerformance/" : "TabuPerformance/";
-    //     String filename = algorithm == "ILS" ? "ILSPerformance.txt" : "TabuPerformance.txt";
-    //     // Print the summary to a new text file called Performance
-    //     try {
-    //         String directory = resultsPath + folder + filename;
-    //         File file = new File(directory);
-    //         file.createNewFile();
-
-    //         FileWriter writer = new FileWriter(file);
-
-    //         List<Integer[]> performanceValues = algorithm == "ILS" ? performanceValuesILS : performanceValuesTS;
-    //         List<String> performanceValueNames = algorithm == "ILS" ? performanceValueNamesILS : performanceValueNamesTS;
-    //         List<Double> performanceTimes = algorithm == "ILS" ? performanceTimesILS : performanceTimesTS;
-            
-    //         // Print the summary for each entry in the hashmap
-    //         for (int i = 0; i < performanceValueNames.size(); i++) {
-    //             writer.write("Dataset: " + performanceValueNames.get(i));
-    //             writer.write(nl);
-    //             writer.write("Optimal: " + performanceValues.get(i)[0] + " | Near: " + performanceValues.get(i)[1] + " | Sum: " + performanceValues.get(i)[2]);
-    //             writer.write(nl);
-    //             writer.write("Average time: " + performanceTimes.get(i) + "ms");
-    //             writer.write(nl);
-    //             writer.write("---------------------------------------");
-    //             writer.write(nl);
-    //             writer.write(nl);
-    //         }
-    //         writer.close();
-    //     } catch (IOException e) {
-    //         System.err.format("IOException: %s%n", e);
-    //     }
-    // }
 }

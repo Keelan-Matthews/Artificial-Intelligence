@@ -9,7 +9,6 @@ public class App {
             "f5_l-d_kp_15_375",
             "f6_l-d_kp_10_60",
             "f7_l-d_kp_7_50",
-            "knapPI_1_100_1000_1",
             "f8_l-d_kp_23_10000",
             "f9_l-d_kp_5_80",
             "f10_l-d_kp_20_879"
@@ -17,13 +16,26 @@ public class App {
 
         GA ga = new GA();
 
-        ga.run("f1_l-d_kp_10_269");
+        for (String instanceName : instanceNames) {
+            if (instanceName.equals("f5_l-d_kp_15_375")) continue; // stupid double precision
 
-        // for (String instanceName : instanceNames) {
-        //     if (instanceName.equals("f5_l-d_kp_15_375")) break; // stupid double precision
-        //     // Run the Genetic Algorithm to solve the knapsack problem for the given instance
-        //     ga.run(instanceName);
-        // }
+            float startTime = System.nanoTime();
+            int bestSolution = ga.run(instanceName);
+            float endTime = System.nanoTime();
+            
+            // Get the total time in seconds
+            float totalTime = (endTime - startTime) / 1000000000;
+            totalTime = Math.round(totalTime * 100) / 100f;
+
+            // Write the results to a file
+            FileHandler.writeData(instanceName, bestSolution, totalTime);
+
+            System.out.println("Instance: " + instanceName);
+            System.out.println("Best solution: " + bestSolution);
+            System.out.println("Known optimum: " + KnapsackInstances.getOptimum(instanceName));
+            System.out.println("Total time: " + totalTime + " seconds");
+            System.out.println();
+        }
 
     }
 }
