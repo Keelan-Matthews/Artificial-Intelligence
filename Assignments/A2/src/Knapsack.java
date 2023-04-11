@@ -6,15 +6,14 @@ import java.util.Random;
  * the KnapsackInstances class
  */
 public class Knapsack {
-    private static int[] ITEM_VALUES;
-    private static int[] ITEM_WEIGHTS;
-    private static int KNAPSACK_CAPACITY;
+    private static double[] ITEM_VALUES;
+    private static double[] ITEM_WEIGHTS;
+    private static double KNAPSACK_CAPACITY;
     private double knownOptimum;
-    private boolean isDouble;
 
-    public Knapsack(ArrayList<Integer> itemValues, ArrayList<Integer> itemWeights, int knapsackCapacity, double knownOptimum, int size) {
-        ITEM_VALUES = new int[size];
-        ITEM_WEIGHTS = new int[size];
+    public Knapsack(ArrayList<Double> itemValues, ArrayList<Double> itemWeights, double knapsackCapacity, double knownOptimum, int size) {
+        ITEM_VALUES = new double[size];
+        ITEM_WEIGHTS = new double[size];
         for (int i = 0; i < itemValues.size(); i++) {
             ITEM_VALUES[i] = itemValues.get(i);
             ITEM_WEIGHTS[i] = itemWeights.get(i);
@@ -29,8 +28,8 @@ public class Knapsack {
      * @param genes
      * @return the total value of the items in the knapsack for the given genes
      */
-    public int getTotalValue(int[] genes) {
-        int totalValue = 0;
+    public double getTotalValue(int[] genes) {
+        double totalValue = 0;
         for (int i = 0; i < genes.length; i++) {
             // If the gene is 1, then add the value of the item to the total value
             if (genes[i] == 1) {
@@ -46,8 +45,8 @@ public class Knapsack {
      * @param genes
      * @return the total weight of the items in the knapsack for the given genes
      */
-    public int getTotalWeight(int[] genes) {
-        int totalWeight = 0;
+    public double getTotalWeight(int[] genes) {
+        double totalWeight = 0;
         for (int i = 0; i < genes.length; i++) {
             // If the gene is 1, then add the weight of the item to the total weight
             if (genes[i] == 1) {
@@ -65,9 +64,9 @@ public class Knapsack {
      * @param genes
      * @return the total value of the items in the knapsack
      */
-    public int getFitness(int[] genes) {
-        int totalValue = getTotalValue(genes);
-        int totalWeight = getTotalWeight(genes);
+    public double getFitness(int[] genes) {
+        double totalValue = getTotalValue(genes);
+        double totalWeight = getTotalWeight(genes);
         // If the total weight exceeds the knapsack capacity, then the fitness is 0
         if (totalWeight > KNAPSACK_CAPACITY) {
             return 0;
@@ -92,15 +91,15 @@ public class Knapsack {
         return genes;
     }
 
-    public int[] getItemValues() {
+    public double[] getItemValues() {
         return ITEM_VALUES;
     }
 
-    public int[] getItemWeights() {
+    public double[] getItemWeights() {
         return ITEM_WEIGHTS;
     }
 
-    public int getKnapsackCapacity() {
+    public double getKnapsackCapacity() {
         return KNAPSACK_CAPACITY;
     }
 

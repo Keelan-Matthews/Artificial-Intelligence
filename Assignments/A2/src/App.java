@@ -18,7 +18,7 @@ public class App {
 
         for (String instanceName : instanceNames) {
             float startTime = System.nanoTime();
-            int bestSolution = ga.run(instanceName);
+            double bestSolution = ga.run(instanceName);
             float endTime = System.nanoTime();
             
             // Get the total time in seconds

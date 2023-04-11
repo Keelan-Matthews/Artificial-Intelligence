@@ -12,12 +12,12 @@ public class GA {
     }
 
     // This is the main method that will be called when the program is run
-    public int run(String instanceName) {
+    public double run(String instanceName) {
         knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
         POPULATION_SIZE = knapsack.getNumberOfItems();
         MAX_GENERATIONS = 1000;
         TOURNAMENT_SIZE = knapsack.getNumberOfItems() / 4;
-        int bestSolution = 0;
+        double bestSolution = 0;
 
         // Create the initial population, i.e. number of chromosomes
         ArrayList<Chromosome> population = new ArrayList<>();

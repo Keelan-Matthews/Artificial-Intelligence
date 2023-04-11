@@ -6,7 +6,7 @@ public class Chromosome implements Comparable<Chromosome> {
     // The genes of the chromosome comprise of 1s and 0s, where 1 means the item is in the knapsack, 
     // and 0 means the item is not in the knapsack
     public int[] genes; 
-    public int fitness;
+    public double fitness;
     public static final double MUTATION_RATE = 0.05;
     private Knapsack knapsack;
 
@@ -22,7 +22,7 @@ public class Chromosome implements Comparable<Chromosome> {
      * @return 1 if this chromosome is better than the other chromosome, -1 if this chromosome is worse than the other chromosome, 0 if they are equal
      */
     public int compareTo(Chromosome other) {
-        return other.fitness - this.fitness;
+        return Double.compare(other.fitness, this.fitness);
     }
 
     /**

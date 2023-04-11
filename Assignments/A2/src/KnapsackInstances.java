@@ -9,9 +9,9 @@ import java.util.HashMap;
 public class KnapsackInstances {
     public static KnapsackInstances instance = null;
     private static HashMap<String, Double> knownOptimums = new HashMap<String, Double>();
-    private static HashMap<String, ArrayList<Integer>> knapsackValues = new HashMap<String, ArrayList<Integer>>();
-    private static HashMap<String, ArrayList<Integer>> knapsackWeights = new HashMap<String, ArrayList<Integer>>();
-    private static HashMap<String, Integer> knapsackCapacities = new HashMap<String, Integer>();
+    private static HashMap<String, ArrayList<Double>> knapsackValues = new HashMap<String, ArrayList<Double>>();
+    private static HashMap<String, ArrayList<Double>> knapsackWeights = new HashMap<String, ArrayList<Double>>();
+    private static HashMap<String, Double> knapsackCapacities = new HashMap<String, Double>();
     private static HashMap<String, Integer> knapsackSizes = new HashMap<String, Integer>();
     
     /**
@@ -64,15 +64,15 @@ public class KnapsackInstances {
         );
     }
 
-    public ArrayList<Integer> getKnapsackValues(String instanceName) {
+    public ArrayList<Double> getKnapsackValues(String instanceName) {
         return knapsackValues.get(instanceName);
     }
 
-    public ArrayList<Integer> getKnapsackWeights(String instanceName) {
+    public ArrayList<Double> getKnapsackWeights(String instanceName) {
         return knapsackWeights.get(instanceName);
     }
 
-    public int getKnapsackCapacity(String instanceName) {
+    public double getKnapsackCapacity(String instanceName) {
         return knapsackCapacities.get(instanceName);
     }
 
