@@ -16,6 +16,8 @@ public class App {
 
         runGA(instanceNames);
         runACO(instanceNames);
+
+        FileHandler.writeSummary();
     }
 
     private static void runGA(String[] instanceNames) {

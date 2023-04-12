@@ -1,2 +1,2 @@
 Best Solution: 9767.0 | Opt: 9767.0
-Time Taken: 0.0s
+Time Taken: 0.03s

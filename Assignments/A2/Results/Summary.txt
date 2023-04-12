@@ -1,0 +1,24 @@
+GA Results
+====================================================
+f1_l-d_kp_10_269 | Sol: 295.0 Opt: 295.0 Time: 0.12 | OPTIMAL
+f9_l-d_kp_5_80 | Sol: 130.0 Opt: 130.0 Time: 0.0 | OPTIMAL
+f3_l-d_kp_4_20 | Sol: 35.0 Opt: 35.0 Time: 0.0 | OPTIMAL
+f5_l-d_kp_15_375 | Sol: 481.069368 Opt: 481.0694 Time: 0.04 | SUB
+f6_l-d_kp_10_60 | Sol: 52.0 Opt: 52.0 Time: 0.0 | OPTIMAL
+f8_l-d_kp_23_10000 | Sol: 9767.0 Opt: 9767.0 Time: 0.03 | OPTIMAL
+f10_l-d_kp_20_879 | Sol: 1025.0 Opt: 1025.0 Time: 0.0 | OPTIMAL
+f2_l-d_kp_20_878 | Sol: 1024.0 Opt: 1024.0 Time: 0.0 | OPTIMAL
+f4_l-d_kp_4_11 | Sol: 23.0 Opt: 23.0 Time: 0.0 | OPTIMAL
+f7_l-d_kp_7_50 | Sol: 107.0 Opt: 107.0 Time: 0.0 | OPTIMAL
+ACO Results
+====================================================
+f1_l-d_kp_10_269 | Sol: 295.0 Opt: 295.0 Time: 0.0 | OPTIMAL
+f9_l-d_kp_5_80 | Sol: 130.0 Opt: 130.0 Time: 0.0 | OPTIMAL
+f3_l-d_kp_4_20 | Sol: 35.0 Opt: 35.0 Time: 0.0 | OPTIMAL
+f5_l-d_kp_15_375 | Sol: 481.069368 Opt: 481.0694 Time: 0.02 | SUB
+f6_l-d_kp_10_60 | Sol: 52.0 Opt: 52.0 Time: 0.0 | OPTIMAL
+f8_l-d_kp_23_10000 | Sol: 9760.0 Opt: 9767.0 Time: 0.08 | SUB
+f10_l-d_kp_20_879 | Sol: 1025.0 Opt: 1025.0 Time: 0.0 | OPTIMAL
+f2_l-d_kp_20_878 | Sol: 1024.0 Opt: 1024.0 Time: 0.01 | OPTIMAL
+f4_l-d_kp_4_11 | Sol: 23.0 Opt: 23.0 Time: 0.0 | OPTIMAL
+f7_l-d_kp_7_50 | Sol: 107.0 Opt: 107.0 Time: 0.0 | OPTIMAL

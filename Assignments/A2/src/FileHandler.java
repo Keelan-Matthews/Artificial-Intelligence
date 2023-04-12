@@ -4,11 +4,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FileHandler {
     private static String dataPath = "Knapsack_Instances/";
     private static String resultsPath = "Results/";
     private static String nl = System.getProperty("line.separator");
+
+    private static HashMap<String, Double[]> GAValues = new HashMap<String, Double[]>();
+    private static HashMap<String, Double[]> ACOValues = new HashMap<String, Double[]>();
 
     // Overload getValues to deal with doubles
     public static ArrayList<Double> getValues(String instanceName) {
@@ -100,6 +104,16 @@ public class FileHandler {
      * @param timeTaken
      */
     public static void writeData(String instanceName, double bestSolution, float timeTaken, String algorithm) {
+        // Add the data to the HashMaps first
+        if (algorithm.equals("GA")) {
+            Double[] values = {bestSolution, (double) timeTaken};
+            GAValues.put(instanceName, values);
+        }
+        else if (algorithm.equals("ACO")) {
+            Double[] values = {bestSolution, (double) timeTaken};
+            ACOValues.put(instanceName, values);
+        }
+
         // Write a new text file with the instance name to the results path
 
         // Result directory
@@ -117,6 +131,65 @@ public class FileHandler {
             writer.write(nl);
             writer.write("Time Taken: " + timeTaken + "s");
             writer.write(nl);
+            writer.close();
+        }
+        catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
+    }
+
+    public static void writeSummary() {
+        // Write to a new text file using the Hashmap values of all the instances
+        // Result directory
+        String directory = resultsPath + "Summary.txt";
+
+        try {
+            File file = new File(directory);
+            file.createNewFile();
+
+            FileWriter writer = new FileWriter(file);
+
+            // Write the GA results
+            writer.write("GA Results");
+            writer.write(nl);
+            writer.write("====================================================");
+            writer.write(nl);
+            for (String instanceName : GAValues.keySet()) {
+                Double[] values = GAValues.get(instanceName);
+                double bestSolution = values[0];
+                double timeTaken = values[1];
+
+                // Round the time to 2 decimal places
+                timeTaken = Math.round(timeTaken * 100.0) / 100.0;
+
+                // Retrieve known optimum solution
+                double knownOptimum = KnapsackInstances.getOptimum(instanceName);
+
+                writer.write(instanceName + " | Sol: " + bestSolution + " Opt: " + knownOptimum + " Time: " + timeTaken + (knownOptimum == bestSolution ? " | OPTIMAL" : " | SUB"));
+                writer.write(nl);
+            }
+
+            // Write the ACO results
+            writer.write("ACO Results");
+            writer.write(nl);
+            writer.write("====================================================");
+            writer.write(nl);
+            for (String instanceName : ACOValues.keySet()) {
+                Double[] values = ACOValues.get(instanceName);
+                double bestSolution = values[0];
+                double timeTaken = values[1];
+
+                // Round the time to 2 decimal places
+                timeTaken = Math.round(timeTaken * 100.0) / 100.0;
+
+                // Retrieve known optimum solution
+                double knownOptimum = KnapsackInstances.getOptimum(instanceName);
+
+                // When writing, ensure that the distance between the columns is consistent
+                writer.write(instanceName + " | Sol: " + bestSolution + " Opt: " + knownOptimum + " Time: " + timeTaken + (knownOptimum == bestSolution ? " | OPTIMAL" : " | SUB"));
+                writer.write(nl);
+            }
+
             writer.close();
         }
         catch (IOException e) {
