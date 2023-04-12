@@ -1,2 +1,2 @@
-Best Solution: 964.0 | Opt: 1025.0
-Time Taken: 2.42s
+Best Solution: 1025.0 | Opt: 1025.0
+Time Taken: 0.01s

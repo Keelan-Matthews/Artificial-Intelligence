@@ -14,7 +14,7 @@ public class App {
             "f10_l-d_kp_20_879"
         };
 
-        // runGA(instanceNames);
+        runGA(instanceNames);
         runACO(instanceNames);
     }
 
