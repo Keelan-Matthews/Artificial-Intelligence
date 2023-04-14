@@ -6,10 +6,15 @@ public class Chromosome implements Comparable<Chromosome> {
     // The genes of the chromosome comprise of 1s and 0s, where 1 means the item is in the knapsack, 
     // and 0 means the item is not in the knapsack
     public int[] genes; 
-    public double fitness;
-    public static final double MUTATION_RATE = 0.05;
-    private Knapsack knapsack;
+    public double fitness; // The fitness of the chromosome
+    public static final double MUTATION_RATE = 0.05; // The mutation rate of the chromosome
+    private Knapsack knapsack; // The knapsack problem that the chromosome is solving
 
+    /**
+     * Constructor for the Chromosome class
+     * @param genes
+     * @param knapsack
+     */
     public Chromosome(int[] genes, Knapsack knapsack) {
         this.knapsack = knapsack;
         this.genes = genes;

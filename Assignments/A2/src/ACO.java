@@ -6,7 +6,7 @@ public class ACO {
     private static final double BETA = 5.0;   // heuristic importance
     private static final double RHO = 0.5;    // pheromone evaporation coefficient
     private static final int Q = 1;           // pheromone deposit amount
-    private static final int MAX_ITERATIONS = 10;  // maximum number of iterations
+    private static final int MAX_ITERATIONS = 50;  // maximum number of iterations
     
     private int numAnts;          // number of ants
     private static double[][] pheromone;      // pheromone matrix
@@ -62,6 +62,7 @@ public class ACO {
 
             // If the total value of the best solution is equal to the optimal value, stop the algorithm
             if (totalValue == knapsack.getKnownOptimum()) {
+                System.out.println("Stopped at iteration " + i);
                 break;
             }
         }
@@ -162,16 +163,6 @@ public class ACO {
                     }
                 }
             }
-
-            // Deposit pheromone on the edges used by the ant
-            // if (solWeight <= knapsack.getKnapsackCapacity() && solValue > 0) {
-            //     for (int j = 0; j < itemSize; j++) {
-            //         if (solution[j] == 1) {
-            //             // Deposit pheromone on the edge
-            //             pheromone[j][(int) (knapsack.getKnapsackCapacity() - solWeight)] += Q / solValue;
-            //         }
-            //     }
-            // }
         }
     }
 
@@ -195,29 +186,21 @@ public class ACO {
             }
 
             // Update the best solution found so far
-            if (bestValue > getSolutionValue(bestSolution)) {
+            if (bestValue > getTotalValueFromSolution(bestSolution)) {
                 bestSolution = tempBestSolution;
             }
         }
     }
 
-    // Get the value of a solution
-    private int getSolutionValue(double[] solution) {
-        int solutionValue = 0;
-        
-        for (int i = 0; i < itemSize; i++) {
-            if (solution[i] == 1) {
-                solutionValue += knapsack.getItemValues()[i];
-            }
-        }
-        
-        return solutionValue;
-    }
-
+    /**
+     * Calculates the total value of a solution
+     * @param solution
+     * @return
+     */
     private double getTotalValueFromSolution(double[] solution) {
-        // Calculate the total value of the best solution
         double totalValue = 0;
 
+        // Add the value of each item in the solution if it is in the solution
         for (int i = 0; i < solution.length; i++) {
             totalValue += solution[i] * knapsack.getItemValues()[i];
         }
@@ -225,40 +208,18 @@ public class ACO {
         return totalValue;
     }
 
+    /**
+     * Calculates the total weight of a solution
+     * @param solution
+     * @return
+     */
     private double getTotalWeightFromSolution(double[] solution) {
-        // Calculate the total weight of the best solution
         double totalWeight = 0;
-
+        // Add the weight of each item in the solution if it is in the solution
         for (int i = 0; i < solution.length; i++) {
             totalWeight += solution[i] * knapsack.getItemWeights()[i];
         }
 
         return totalWeight;
-    }
-
-    private void printSolution(double[] solution) {
-        // Print the best solution
-        System.out.println("Solution: ");
-
-        for (int i = 0; i < solution.length; i++) {
-            System.out.print(solution[i] + " ");
-        }
-
-        System.out.println();
-
-        System.out.println("Total value: " + getTotalValueFromSolution(solution));
-        System.out.println();
-    }
-
-    private void printMatrix(double[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-
-            System.out.println();
-        }
-
-        System.out.println();
     }
 }

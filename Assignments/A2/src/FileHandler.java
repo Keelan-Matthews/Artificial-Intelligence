@@ -7,14 +7,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileHandler {
-    private static String dataPath = "Knapsack_Instances/";
-    private static String resultsPath = "Results/";
-    private static String nl = System.getProperty("line.separator");
+    private static String dataPath = "Knapsack_Instances/"; // Path to the data files
+    private static String resultsPath = "Results/"; // Path to the results files
+    private static String nl = System.getProperty("line.separator"); // New line character
 
-    private static HashMap<String, Double[]> GAValues = new HashMap<String, Double[]>();
-    private static HashMap<String, Double[]> ACOValues = new HashMap<String, Double[]>();
+    private static HashMap<String, Double[]> GAValues = new HashMap<String, Double[]>(); // Store the values for the GA
+    private static HashMap<String, Double[]> ACOValues = new HashMap<String, Double[]>(); // Store the values for the ACO
 
-    // Overload getValues to deal with doubles
+    /**
+     * Get the values of the items in the knapsack instance
+     * @param instanceName
+     * @return
+     */
     public static ArrayList<Double> getValues(String instanceName) {
         ArrayList<Double> itemValues = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
@@ -38,16 +42,16 @@ public class FileHandler {
         return itemValues;
     }
 
-    // Overload getWeights to deal with doubles
+    /**
+     * Get the weights of the items in the knapsack instance
+     * @param instanceName
+     * @return
+     */
     public static ArrayList<Double> getWeights(String instanceName) {
         ArrayList<Double> itemWeights = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
             String line;
             while ((line = br.readLine()) != null) {
-                // Each line has two numbers separated by a space,
-                // the first number is the weight of the item and the second number is the value of the item.
-                // The first line is different as the first number is the number of items in the file,
-                // and the second number is the capacity of the knapsack (on the same line)
                 String[] numbers = line.split(" ");
 
                 itemWeights.add(Double.parseDouble(numbers[1]));
@@ -62,7 +66,11 @@ public class FileHandler {
         return itemWeights;
     }
 
-    // Overload getCapacity to deal with doubles
+    /**
+     * Get the capacity of the knapsack instance
+     * @param instanceName
+     * @return
+     */
     public static double getCapacity(String instanceName) {
         double capacity = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
@@ -80,6 +88,11 @@ public class FileHandler {
         return capacity;
     }
 
+    /**
+     * Get the number of items in the knapsack instance
+     * @param instanceName
+     * @return
+     */
     public static int getSize(String instanceName) {
         int itemCount = 0;
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath + instanceName))) {
@@ -138,6 +151,9 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Write the summary of the results to a text file
+     */
     public static void writeSummary() {
         // Write to a new text file using the Hashmap values of all the instances
         // Result directory

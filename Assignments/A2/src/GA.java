@@ -6,16 +6,21 @@ public class GA {
     public static int TOURNAMENT_SIZE; // The number of chromosomes in the tournament
     public static int MAX_GENERATIONS; // The maximum number of generations
     public static int POPULATION_SIZE; // The number of chromosomes in the population
-    private Knapsack knapsack;
+    private Knapsack knapsack; // an instance of the Knapsack class for the current knapsack problem
 
     public GA() {
     }
 
-    // This is the main method that will be called when the program is run
+    /**
+     * Orchestrates the genetic algorithm to solve the knapsack problem
+     * @param instanceName
+     * @return
+     */
     public double run(String instanceName) {
+        // Get the knapsack instance and set the population size, max generations, and tournament size
         knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
         POPULATION_SIZE = knapsack.getNumberOfItems();
-        MAX_GENERATIONS = 1000;
+        MAX_GENERATIONS = 500;
         TOURNAMENT_SIZE = knapsack.getNumberOfItems() / 4;
         double bestSolution = 0;
 
@@ -79,15 +84,8 @@ public class GA {
             childChromosomes.add(child2);
         }
 
-        // A BIT IFFY HERE
         // Sort the population by fitness and keep the best individuals
-        // Collections.sort(population);
         Collections.sort(childChromosomes);
-
-        // Add the best individuals from the previous generation to the new generation
-        // for (int i = 0; i < POPULATION_SIZE / 2; i++) {
-        //     childChromosomes.set(i, population.get(i));
-        // }
 
         return childChromosomes;
     }
@@ -110,14 +108,5 @@ public class GA {
         // Sort the tournament by fitness and return the best individual
         Collections.sort(tournament);
         return tournament.get(0);
-    }
-
-    // This method prints out the population in a nice format
-    private static void printPopulation(ArrayList<Chromosome> population) {
-        System.out.println("Population: ");
-        for (Chromosome chromosome : population) {
-            chromosome.print();
-        }
-        System.out.println();
     }
 }

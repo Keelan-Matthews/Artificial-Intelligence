@@ -6,11 +6,19 @@ import java.util.Random;
  * the KnapsackInstances class
  */
 public class Knapsack {
-    private static double[] ITEM_VALUES;
-    private static double[] ITEM_WEIGHTS;
-    private static double KNAPSACK_CAPACITY;
-    private double knownOptimum;
+    private static double[] ITEM_VALUES;  // The values of the items
+    private static double[] ITEM_WEIGHTS; // The weights of the items
+    private static double KNAPSACK_CAPACITY; // The capacity of the knapsack
+    private double knownOptimum; // The known optimum value of the knapsack problem
 
+    /**
+     * Constructor for the Knapsack class
+     * @param itemValues
+     * @param itemWeights
+     * @param knapsackCapacity
+     * @param knownOptimum
+     * @param size
+     */
     public Knapsack(ArrayList<Double> itemValues, ArrayList<Double> itemWeights, double knapsackCapacity, double knownOptimum, int size) {
         ITEM_VALUES = new double[size];
         ITEM_WEIGHTS = new double[size];

@@ -1,6 +1,7 @@
 public class App {
     public static void main(String[] args) throws Exception {
         
+        // The names of the instances to run
         String[] instanceNames = {
             "f1_l-d_kp_10_269",
             "f2_l-d_kp_20_878",
@@ -14,12 +15,18 @@ public class App {
             "f10_l-d_kp_20_879"
         };
 
+        // Run the algorithms
         runGA(instanceNames);
         runACO(instanceNames);
 
+        // Write the results to a file
         FileHandler.writeSummary();
     }
 
+    /**
+     * Run the GA algorithm
+     * @param instanceNames
+     */
     private static void runGA(String[] instanceNames) {
         GA ga = new GA();
 
@@ -28,9 +35,9 @@ public class App {
         System.out.println();
 
         for (String instanceName : instanceNames) {
-            float startTime = System.nanoTime();
-            double bestSolution = ga.run(instanceName);
-            float endTime = System.nanoTime();
+            float startTime = System.nanoTime(); // Get the start time
+            double bestSolution = ga.run(instanceName); // Run the algorithm
+            float endTime = System.nanoTime(); // Get the end time
             
             // Get the total time in seconds
             float totalTime = (endTime - startTime) / 1000000000;
@@ -47,6 +54,10 @@ public class App {
         }
     }
 
+    /**
+     * Run the ACO algorithm
+     * @param instanceNames
+     */
     private static void runACO(String[] instanceNames) {
         ACO aco = new ACO();
 
@@ -55,9 +66,9 @@ public class App {
         System.out.println();
 
         for (String instanceName : instanceNames) {
-            float startTime = System.nanoTime();
-            double bestSolution = aco.run(instanceName);
-            float endTime = System.nanoTime();
+            float startTime = System.nanoTime(); // Get the start time
+            double bestSolution = aco.run(instanceName); // Run the algorithm
+            float endTime = System.nanoTime(); // Get the end time
             
             // Get the total time in seconds
             float totalTime = (endTime - startTime) / 1000000000;
