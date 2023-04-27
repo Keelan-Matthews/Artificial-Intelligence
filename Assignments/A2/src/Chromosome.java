@@ -8,6 +8,7 @@ public class Chromosome implements Comparable<Chromosome> {
     public int[] genes; 
     public double fitness; // The fitness of the chromosome
     public static final double MUTATION_RATE = 0.05; // The mutation rate of the chromosome
+    public static final double CROSSOVER_RATE = 0.9; // The crossover rate of the chromosome
     private Knapsack knapsack; // The knapsack problem that the chromosome is solving
 
     /**
@@ -36,6 +37,11 @@ public class Chromosome implements Comparable<Chromosome> {
      * @return the new child chromosome
      */
     public Chromosome crossover(Chromosome other) {
+        // If the random number is bigger than the crossover rate, then return the other chromosome
+        if (new Random().nextDouble() > CROSSOVER_RATE) {
+            return other;
+        }
+
         int[] childGenes = new int[genes.length];
 
         // Randomly select a crossover point

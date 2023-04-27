@@ -12,7 +12,8 @@ public class App {
             "f7_l-d_kp_7_50",
             "f8_l-d_kp_23_10000",
             "f9_l-d_kp_5_80",
-            "f10_l-d_kp_20_879"
+            "f10_l-d_kp_20_879",
+            "knapPI_1_100_1000_1"
         };
 
         // Run the algorithms

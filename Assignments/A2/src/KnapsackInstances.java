@@ -37,6 +37,7 @@ public class KnapsackInstances {
         knownOptimums.put("f8_l-d_kp_23_10000", 9767.0);
         knownOptimums.put("f9_l-d_kp_5_80", 130.0);
         knownOptimums.put("f10_l-d_kp_20_879", 1025.0);
+        knownOptimums.put("knapPI_1_100_1000_1", 9147.0);
 
         // Populate the knapsack values, weights and capacities from the files
         // for each known optimum string and place them in the HashMaps

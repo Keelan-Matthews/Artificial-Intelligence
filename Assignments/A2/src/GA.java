@@ -40,11 +40,6 @@ public class GA {
             if (bestSolution < population.get(0).fitness) {
                 bestSolution = population.get(0).fitness;
             }
-
-            // If the best solution found so far is the optimal solution, then stop
-            if (bestSolution == knapsack.getKnownOptimum()) {
-                break;
-            }
         }
 
         return bestSolution;

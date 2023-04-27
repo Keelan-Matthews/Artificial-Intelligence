@@ -3,10 +3,10 @@ import java.util.Random;
 
 public class ACO {
     private static final double ALPHA = 1.0;  // pheromone importance
-    private static final double BETA = 5.0;   // heuristic importance
+    private static final double BETA = 2.0;   // heuristic importance
     private static final double RHO = 0.5;    // pheromone evaporation coefficient
     private static final int Q = 1;           // pheromone deposit amount
-    private static final int MAX_ITERATIONS = 50;  // maximum number of iterations
+    private int MAX_ITERATIONS;  // maximum number of iterations
     
     private int numAnts;          // number of ants
     private static double[][] pheromone;      // pheromone matrix
@@ -24,8 +24,9 @@ public class ACO {
     public double run(String instanceName) {
         knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
         itemSize = knapsack.getNumberOfItems();
-        numAnts = itemSize * 10;
+        numAnts =itemSize;
         double totalValue = 0;
+        MAX_ITERATIONS = 500;
         
         // Initialize pheromone and heuristic matrices
         pheromone = new double[itemSize][(int) knapsack.getKnapsackCapacity() + 1];
@@ -59,12 +60,6 @@ public class ACO {
             updateBestSolution(solutions);
 
             totalValue = getTotalValueFromSolution(bestSolution);
-
-            // If the total value of the best solution is equal to the optimal value, stop the algorithm
-            if (totalValue == knapsack.getKnownOptimum()) {
-                System.out.println("Stopped at iteration " + i);
-                break;
-            }
         }
 
         return totalValue;
