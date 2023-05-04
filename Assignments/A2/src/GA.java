@@ -19,10 +19,11 @@ public class GA {
     public double run(String instanceName) {
         // Get the knapsack instance and set the population size, max generations, and tournament size
         knapsack = KnapsackInstances.getInstance().getKnapsack(instanceName);
-        POPULATION_SIZE = knapsack.getNumberOfItems();
+        POPULATION_SIZE = knapsack.getNumberOfItems() / 2;
         MAX_GENERATIONS = 500;
         TOURNAMENT_SIZE = knapsack.getNumberOfItems() / 4;
         double bestSolution = 0;
+        int iterationWithBestSolution = 0;
 
         // Create the initial population, i.e. number of chromosomes
         ArrayList<Chromosome> population = new ArrayList<>();
@@ -39,9 +40,11 @@ public class GA {
 
             if (bestSolution < population.get(0).fitness) {
                 bestSolution = population.get(0).fitness;
+                iterationWithBestSolution = i;
             }
         }
 
+        System.out.println("Best solution found after " + iterationWithBestSolution + " iterations");
         return bestSolution;
     }
 
