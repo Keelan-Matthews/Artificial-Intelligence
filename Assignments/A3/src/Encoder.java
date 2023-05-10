@@ -1,4 +1,16 @@
+import java.util.ArrayList;
+
 public class Encoder {
+    // This encodes the whole file
+    public static ArrayList<double[]> encodeFile(ArrayList<String> file) {
+        ArrayList<double[]> encodedFile = new ArrayList<>();
+
+        for (String line : file) {
+            encodedFile.add(encode(line));
+        }
+
+        return encodedFile;
+    } 
     // This function uses one-hot encoding to encode the breast cancer data
     public static double[] encode(String input) {
         String[] values = input.split(",");
@@ -207,14 +219,6 @@ public class Encoder {
             encoded[9] = 1;
         } else {
             encoded[9] = 0;
-        }
-
-        // Convert the output value to a numeric value
-        String output = values[10];
-        if (output.equals("yes")) {
-            encoded[10] = 1;
-        } else {
-            encoded[10] = 0;
         }
 
         return encoded;

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class NeuralNetwork {
@@ -101,8 +102,20 @@ public class NeuralNetwork {
      * @param input
      * @return
      */
-    public double[] predict(double[] input) {
+    public double[] predict(double[] inputList) {
         double[] hidden = new double[hiddenSize];
+
+        double[] input;
+        // If the input size is 9, then the class attribute is still in and needs to be removed (the first element to remove)
+        if (inputList.length == 9) {
+            input = new double[8];
+            for (int j = 1; j < inputList.length; j++) {
+                input[j - 1] = inputList[j];
+            }
+        }
+        else {
+            input = inputList;
+        }
 
         // Calculate the output of the hidden layer neurons
         for (int i = 0; i < hiddenSize; i++) {
@@ -136,14 +149,26 @@ public class NeuralNetwork {
     }
 
     // backpropagation function
-    public void train(double[][] inputs, double[][] labels, int epochs) {
+    public void train(ArrayList<double[]> inputsList, int epochs) {
+
+        // Convert the array list into a 2D array
+        double[][] inputs = new double[inputsList.size()][];
+        for (int i = 0; i < inputsList.size(); i++) {
+            inputs[i] = inputsList.get(i);
+        }
+
+        // Train the neural network for the specified number of epochs
         for (int epoch = 0; epoch < epochs; epoch++) {
             double error = 0.0; // The total error for the epoch
 
             // use backpropagation to update the weights
             for (int i = 0; i < inputs.length; i++) {
-                double[] input = inputs[i];
-                double[] label = labels[i];
+                // The label is input[0], extract that and remove it from the input array
+                double label = inputs[i][0];
+                double[] input = new double[inputs[i].length - 1];
+                for (int j = 1; j < inputs[i].length; j++) {
+                    input[j - 1] = inputs[i][j];
+                }
 
                 // Calculate the output of the hidden layer neurons
                 double[] hidden = new double[hiddenSize];
@@ -174,7 +199,7 @@ public class NeuralNetwork {
                 output = sigmoid(output);
 
                 // Calculate the error of the neural network
-                double delta = output - label[0];
+                double delta = output - label;
                 error += Math.pow(delta, 2);
 
                 // Calculate the error of the output layer

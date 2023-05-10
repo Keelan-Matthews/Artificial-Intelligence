@@ -1,18 +1,22 @@
-## Getting Started
+# COS 314 Assignment 3
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
 
-## Folder Structure
+## Prerequisites
 
-The workspace contains two folders by default, where:
+- JDK 17 or higher
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## Usage
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+1. Double click on the run.bat file to execute it
+2. The application should now start running.
+3. Once it is complete, you can view the results in the "Results" folder.
 
-## Dependency Management
+## Issues
+If the bat file does not run, please consider using VS Code with the Java extension or an IDE. The program does run perfectly,
+but I had a few issues when getting it to run manually. If you still encounter issues, please feel free to contact me on Discord
+or email me u21549967@tuks.co.za
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Contributors
+
+Keelan Matthews - u21549967

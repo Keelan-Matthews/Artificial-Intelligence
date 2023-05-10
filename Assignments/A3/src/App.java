@@ -1,15 +1,25 @@
+import java.util.ArrayList;
+
 public class App {
     public static void main(String[] args) throws Exception {
-        NeuralNetwork neuralNetwork = new NeuralNetwork(2, 3, 0.1);
+
+        ArrayList<String> file = FileHandler.readFile("breast-cancer.data");
+        ArrayList<double[]> encoded = Encoder.encodeFile(file);
+        
+        // Use this data to train a new neural network
+        NeuralNetwork nn = new NeuralNetwork(8, 32, 0.01);
 
         // Train the neural network
-        neuralNetwork.train(new double[][] { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } },
-                new double[][] { { 0 }, { 1 }, { 1 }, { 0 } }, 10000);
+        nn.train(encoded, 20000);
+
+        ArrayList<String> testFile = new ArrayList<>();
+        testFile.add("no-recurrence-events,60-69,ge40,30-34,0-2,no,2,left,left_low,yes");
+        testFile.add("no-recurrence-events,30-39,premeno,20-24,0-2,no,3,left,central,no");
+
+        ArrayList<double[]> encodedTestFile = Encoder.encodeFile(testFile);
 
         // Test the neural network
-        System.out.println("0, 0: " + neuralNetwork.predict(new double[] { 0, 0 })[0]); 
-        System.out.println("0, 1: " + neuralNetwork.predict(new double[] { 0, 1 })[0]);
-        System.out.println("1, 0: " + neuralNetwork.predict(new double[] { 1, 0 })[0]);
-        System.out.println("1, 1: " + neuralNetwork.predict(new double[] { 1, 1 })[0]);
+        System.out.println(nn.predict(encodedTestFile.get(0))[0]);
+        System.out.println(nn.predict(encodedTestFile.get(1))[0]);
     }
 }
