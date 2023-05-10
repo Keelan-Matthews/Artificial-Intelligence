@@ -76,6 +76,7 @@ public class NeuralNetwork {
     /**
      * The derivative of the sigmoid function,
      * used to calculate the error of the neural network in the backpropagation
+     * 
      * @param x
      * @return
      */
@@ -103,19 +104,93 @@ public class NeuralNetwork {
      * @return
      */
     public double[] predict(double[] inputList) {
-        double[] hidden = new double[hiddenSize];
+        // Remove the class attribute from the input if it exists
+        double[] input = trimClassAttribtue(inputList);
+        // Calculate the output of the hidden layer neurons
+        double[] hidden = CalcHiddenLayerOutput(input);
+        // Calculate the output of the neural network
+        double output = CalcOutput(hidden);
 
-        double[] input;
-        // If the input size is 9, then the class attribute is still in and needs to be removed (the first element to remove)
-        if (inputList.length == 9) {
-            input = new double[8];
-            for (int j = 1; j < inputList.length; j++) {
-                input[j - 1] = inputList[j];
+        return new double[] { output };
+    }
+
+    // Function to train the neural network
+    public void train(ArrayList<double[]> inputsList, int epochs) {
+
+        // Convert the array list into a 2D array
+        double[][] inputs = ListToArray(inputsList);
+
+        // Train the neural network for the specified number of epochs
+        for (int epoch = 0; epoch < epochs; epoch++) {
+            double error = 0.0; // The total error for the epoch
+
+            for (int i = 0; i < inputs.length; i++) {
+                // The label is input[0], extract that and remove it from the input array
+                double label = inputs[i][0];
+                double[] input = trimClassAttribtue(inputs[i]);
+
+                // Backpropagation
+                double delta = backpropagation(input, label);
+
+                // Add the error to the total error for the epoch and square it
+                // The error is squared to make sure it is positive
+                error += Math.pow(delta, 2);
+            }
+
+            System.out.println("Epoch " + (epoch + 1) + " error: " + error);
+        }
+    }
+
+    /**
+     * Function to train the neural network using backpropagation
+     * 
+     * @param input
+     * @param target
+     * @return
+     */
+    public double backpropagation(double[] input, double target) {
+        // Calculate the output of the hidden layer neurons
+        double[] hidden = CalcHiddenLayerOutput(input);
+        // Calculate the output of the neural network
+        double output = CalcOutput(hidden);
+
+        // Calculate the error of the neural network by subtracting the expected
+        // output from the actual output
+        double delta = output - target;
+
+        // Calculate the error of the output layer
+        double outputError = delta * sigmoidDerivative(output);
+
+        // Calculate the error of the hidden layer
+        double[] hiddenError = new double[hiddenSize];
+        for (int j = 0; j < hiddenSize; j++) {
+            hiddenError[j] = outputError * weightsHiddenOutput[j] * sigmoidDerivative(hidden[j]);
+        }
+
+        // Update the weights between the hidden and output layers
+        for (int j = 0; j < hiddenSize; j++) {
+            weightsHiddenOutput[j] -= hidden[j] * outputError * learningRate;
+        }
+
+        // Update the weights between the input and hidden layers
+        for (int j = 0; j < inputSize; j++) {
+            for (int k = 0; k < hiddenSize; k++) {
+                weightsInputHidden[j][k] -= input[j] * hiddenError[k] * learningRate;
             }
         }
-        else {
-            input = inputList;
-        }
+
+        return delta;
+    }
+
+    /**
+     * Function to multiply the input by the weights and apply the activation
+     * for the hidden layer
+     * 
+     * @param input
+     * @return
+     */
+    public double[] CalcHiddenLayerOutput(double[] input) {
+        double[] hidden = new double[hiddenSize];
 
         // Calculate the output of the hidden layer neurons
         for (int i = 0; i < hiddenSize; i++) {
@@ -132,6 +207,18 @@ public class NeuralNetwork {
             hidden[i] = relu(sum);
         }
 
+        return hidden;
+    }
+
+    /**
+     * Function to calculate the output of the neural network by multiplying the
+     * hidden layer outputs by the weights between the hidden and output layers,
+     * and applying the sigmoid activation function to the result
+     * 
+     * @param hidden
+     * @return
+     */
+    public double CalcOutput(double[] hidden) {
         double output = 0;
 
         // Multiply the hidden layer outputs by the weights between the hidden and
@@ -145,86 +232,28 @@ public class NeuralNetwork {
         // probability between 0 and 1
         output = sigmoid(output);
 
-        return new double[] { output };
+        return output;
     }
 
-    // backpropagation function
-    public void train(ArrayList<double[]> inputsList, int epochs) {
+    // Function to convert an array list to a 2D array
+    public double[][] ListToArray(ArrayList<double[]> list) {
+        double[][] array = new double[list.size()][];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
 
-        // Convert the array list into a 2D array
-        double[][] inputs = new double[inputsList.size()][];
-        for (int i = 0; i < inputsList.size(); i++) {
-            inputs[i] = inputsList.get(i);
+    // Function to remove the class attribute from the input
+    public double[] trimClassAttribtue(double[] input) {
+        if (input.length == 8) {
+            return input;
         }
 
-        // Train the neural network for the specified number of epochs
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            double error = 0.0; // The total error for the epoch
-
-            // use backpropagation to update the weights
-            for (int i = 0; i < inputs.length; i++) {
-                // The label is input[0], extract that and remove it from the input array
-                double label = inputs[i][0];
-                double[] input = new double[inputs[i].length - 1];
-                for (int j = 1; j < inputs[i].length; j++) {
-                    input[j - 1] = inputs[i][j];
-                }
-
-                // Calculate the output of the hidden layer neurons
-                double[] hidden = new double[hiddenSize];
-                for (int j = 0; j < hiddenSize; j++) {
-                    double sum = 0;
-
-                    // Multiply the input by its corresponding weight and add it to the sum,
-                    // do this for all the hidden neurons' inputs
-                    for (int k = 0; k < inputSize; k++) {
-                        sum += input[k] * weightsInputHidden[k][j];
-                    }
-
-                    // Apply the activation function to each hidden neuron's sum,
-                    // to simulate the neuron firing or not based on the input
-                    hidden[j] = relu(sum);
-                }
-
-                // Multiply the hidden layer outputs by the weights between the hidden and
-                // output layers,
-                // and sum them, resulting in a single output value
-                double output = 0;
-                for (int j = 0; j < hiddenSize; j++) {
-                    output += hidden[j] * weightsHiddenOutput[j];
-                }
-
-                // Apply the sigmoid activation function to the output to map it to a
-                // probability between 0 and 1
-                output = sigmoid(output);
-
-                // Calculate the error of the neural network
-                double delta = output - label;
-                error += Math.pow(delta, 2);
-
-                // Calculate the error of the output layer
-                double outputError = delta * sigmoidDerivative(output);
-
-                // Calculate the error of the hidden layer
-                double[] hiddenError = new double[hiddenSize];
-                for (int j = 0; j < hiddenSize; j++) {
-                    hiddenError[j] = outputError * weightsHiddenOutput[j] * sigmoidDerivative(hidden[j]);
-                }
-
-                // Update the weights between the hidden and output layers
-                for (int j = 0; j < hiddenSize; j++) {
-                    weightsHiddenOutput[j] -= hidden[j] * outputError * learningRate;
-                }
-
-                // Update the weights between the input and hidden layers
-                for (int j = 0; j < inputSize; j++) {
-                    for (int k = 0; k < hiddenSize; k++) {
-                        weightsInputHidden[j][k] -= input[j] * hiddenError[k] * learningRate;
-                    }
-                }
-            }
-
-            System.out.println("Epoch " + (epoch+1) + " error: " + error);
+        double[] trimmed = new double[input.length - 1];
+        for (int i = 1; i < input.length; i++) {
+            trimmed[i - 1] = input[i];
         }
+        return trimmed;
     }
 }
