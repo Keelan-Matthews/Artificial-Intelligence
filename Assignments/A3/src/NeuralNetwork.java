@@ -24,7 +24,7 @@ public class NeuralNetwork {
 
         this.weightsInputHidden = new double[inputSize][hiddenSize];
         this.weightsHiddenOutput = new double[hiddenSize];
-        this.random = GenerateRandomWithSeed(seed);
+        this.random = new Random(seed);
 
         initializeWeights();
     }
@@ -72,7 +72,7 @@ public class NeuralNetwork {
     public void train(ArrayList<double[]> inputsList, int epochs) {
         int epochsWithoutImprovement = 0;
         double bestValidationError = Double.MAX_VALUE;
-        double tolerance = 0.001;
+        double tolerance = 0.01;
 
         // Convert the array list into a 2D array
         double[][] inputs = ListToArray(inputsList);
@@ -258,20 +258,6 @@ public class NeuralNetwork {
      */
     private double relu(double x) {         
         return Math.max(0, x);
-    }
-
-    /**
-     * Function to generate a random number generator with a seed
-     * 
-     * @param seed
-     * @return
-     */
-    private Random GenerateRandomWithSeed(long seed) {
-        if (seed == 0) {
-            return new Random();
-        } else {
-            return new Random(seed);
-        }
     }
 
 }

@@ -1,28 +1,31 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class App {
     public static ArrayList<String> testFile = new ArrayList<>();
     public static int numCorrect = 0;
     public static void main(String[] args) throws Exception {
         ArrayList<String> file = FileHandler.readFile("breast-cancer.data");
+
+        //======= NEURAL NETWORK =======//
         ArrayList<double[]> encoded = Encoder.encodeFile(file);
 
-        // Use this data to train a new neural network
-        NeuralNetwork nn = new NeuralNetwork(8, 8, 0.001);
+        // Split the encoded file into a training and testing set
+        ArrayList<double[]> trainingSet = new ArrayList<>();
+        ArrayList<double[]> testingSet = new ArrayList<>();
+        for (int i = 0; i < encoded.size(); i++) {
+            if (i % 2 == 0) {
+                trainingSet.add(encoded.get(i));
+            } else {
+                testingSet.add(encoded.get(i));
+            }
+        }
 
-        // Train the neural network
-        nn.train(encoded, 10000);
+        // Get the size of the input layer
+        int inputSize = encoded.get(0).length - 1;
 
-        // Test the neural network
-        printFile(encoded, nn);
-
-
-
-        ArrayList<HashMap<String, Boolean>> terminalNodes = TerminalEncoder.encodeFile(file);
-        ArrayList<Boolean> encodedCategories = TerminalEncoder.encodeCategories(file);
-
-        // Use this data to train a new Genetic Programming algorithm
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 11, 0.01);
+        nn.train(trainingSet, 2000);
+        printFile(testingSet, nn);
     }
 
     public static void printFile(ArrayList<double[]> encodedFile, NeuralNetwork nn) {
