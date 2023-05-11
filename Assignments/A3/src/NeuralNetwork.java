@@ -7,7 +7,7 @@ public class NeuralNetwork {
     private double learningRate; // The rate at which the weights are updated during training
     private double[][] weightsInputHidden; // The weights between the input and hidden layers
     private double[] weightsHiddenOutput; // The weights between the hidden and output layers
-    private long seed; // The seed for the random number generator
+    private long seed = 2; // The seed for the random number generator
     private Random random; // The random number generator
 
     /**
@@ -30,20 +30,6 @@ public class NeuralNetwork {
     }
 
     /**
-     * Function to generate a random number generator with a seed
-     * 
-     * @param seed
-     * @return
-     */
-    private Random GenerateRandomWithSeed(long seed) {
-        if (seed == 0) {
-            return new Random();
-        } else {
-            return new Random(seed);
-        }
-    }
-
-    /**
      * Function to initialize the weights of the neural network
      */
     private void initializeWeights() {
@@ -63,39 +49,6 @@ public class NeuralNetwork {
     }
 
     /**
-     * Function to train the neural network,
-     * maps the output to a probability between 0 and 1
-     * 
-     * @param input
-     * @param target
-     */
-    private double sigmoid(double x) {
-        return 1 / (1 + Math.exp(-x));
-    }
-
-    /**
-     * The derivative of the sigmoid function,
-     * used to calculate the error of the neural network in the backpropagation
-     * 
-     * @param x
-     * @return
-     */
-    private double sigmoidDerivative(double x) {
-        double sigmoid = sigmoid(x);
-        return sigmoid * (1 - sigmoid);
-    }
-
-    /**
-     * The activation function for the hidden layer
-     * 
-     * @param x
-     * @return
-     */
-    private double relu(double x) {
-        return Math.max(0, x);
-    }
-
-    /**
      * This function predicts the output of the neural network by multiplying the
      * input by the weights,
      * and applying the activation function to the result
@@ -103,19 +56,23 @@ public class NeuralNetwork {
      * @param input
      * @return
      */
-    public double[] predict(double[] inputList) {
+    public double predict(double[] inputList) {
         // Remove the class attribute from the input if it exists
         double[] input = trimClassAttribtue(inputList);
+
         // Calculate the output of the hidden layer neurons
         double[] hidden = CalcHiddenLayerOutput(input);
         // Calculate the output of the neural network
         double output = CalcOutput(hidden);
 
-        return new double[] { output };
+        return output;
     }
 
     // Function to train the neural network
     public void train(ArrayList<double[]> inputsList, int epochs) {
+        int epochsWithoutImprovement = 0;
+        double bestValidationError = Double.MAX_VALUE;
+        double tolerance = 0.001;
 
         // Convert the array list into a 2D array
         double[][] inputs = ListToArray(inputsList);
@@ -137,6 +94,19 @@ public class NeuralNetwork {
                 error += Math.pow(delta, 2);
             }
 
+            // Determine if the error is within the tolerance
+            if (error + tolerance < bestValidationError) {
+                bestValidationError = error;
+                epochsWithoutImprovement = 0;
+            } else {
+                epochsWithoutImprovement++;
+            }
+
+            // Stop training if validation error has not improved for 10 epochs
+            if (epochsWithoutImprovement == 50) {
+                break;
+            }
+
             System.out.println("Epoch " + (epoch + 1) + " error: " + error);
         }
     }
@@ -148,7 +118,7 @@ public class NeuralNetwork {
      * @param target
      * @return
      */
-    public double backpropagation(double[] input, double target) {
+    public double backpropagation(double[] input, double label) {
         // Calculate the output of the hidden layer neurons
         double[] hidden = CalcHiddenLayerOutput(input);
         // Calculate the output of the neural network
@@ -156,7 +126,7 @@ public class NeuralNetwork {
 
         // Calculate the error of the neural network by subtracting the expected
         // output from the actual output
-        double delta = output - target;
+        double delta = output - label;
 
         // Calculate the error of the output layer
         double outputError = delta * sigmoidDerivative(output);
@@ -256,4 +226,52 @@ public class NeuralNetwork {
         }
         return trimmed;
     }
+
+    /**
+     * Function to train the neural network,
+     * maps the output to a probability between 0 and 1
+     * 
+     * @param input
+     * @param target
+     */
+    private double sigmoid(double x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    /**
+     * The derivative of the sigmoid function,
+     * used to calculate the error of the neural network in the backpropagation
+     * 
+     * @param x
+     * @return
+     */
+    private double sigmoidDerivative(double x) {
+        double sigmoid = sigmoid(x);
+        return sigmoid * (1 - sigmoid);
+    }
+
+    /**
+     * The activation function for the hidden layer
+     * 
+     * @param x
+     * @return
+     */
+    private double relu(double x) {         
+        return Math.max(0, x);
+    }
+
+    /**
+     * Function to generate a random number generator with a seed
+     * 
+     * @param seed
+     * @return
+     */
+    private Random GenerateRandomWithSeed(long seed) {
+        if (seed == 0) {
+            return new Random();
+        } else {
+            return new Random(seed);
+        }
+    }
+
 }

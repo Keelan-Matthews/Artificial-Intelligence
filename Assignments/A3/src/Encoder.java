@@ -19,9 +19,9 @@ public class Encoder {
         // Convert the recurrence or non-recurrence value to a numeric value
         String recurrence = values[0];
         if (recurrence.equals("recurrence-events")) {
-            encoded[0] = 1;
+            encoded[0] = 1.0;
         } else {
-            encoded[0] = 0;
+            encoded[0] = 0.0;
         }
 
         // Convert the ange range to a numeric value
@@ -186,24 +186,24 @@ public class Encoder {
         // Convert the breast value to a numeric value
         String breast = values[7];
         if (breast.equals("left")) {
-            encoded[7] = 1;
+            encoded[7] = 1.0;
         } else {
-            encoded[7] = 0;
+            encoded[7] = 0.0;
         }
 
         // Convert the breast-quad value to a numeric value
         String breastQuad = values[8];
         switch (breastQuad) {
-            case "left-up":
+            case "left_up":
                 encoded[8] = 1.0;
                 break;
-            case "left-low":
+            case "left_low":
                 encoded[8] = 2.0;
                 break;
-            case "right-up":
+            case "right_up":
                 encoded[8] = 3.0;
                 break;
-            case "right-low":
+            case "right_low":
                 encoded[8] = 4.0;
                 break;
             case "central":
@@ -216,9 +216,9 @@ public class Encoder {
         // Convert the irradiat value to a numeric value
         String irradiat = values[9];
         if (irradiat.equals("yes")) {
-            encoded[9] = 1;
+            encoded[9] = 1.0;
         } else {
-            encoded[9] = 0;
+            encoded[9] = 0.0;
         }
 
         return encoded;
