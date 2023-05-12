@@ -43,7 +43,7 @@ public class GPClassifier {
         String[] nodeCaps = { "yes", "no" };
         String[] degMalig = { "1", "2", "3" };
         String[] breast = { "left", "right" };
-        String[] breastQuad = { "left-up", "left-low", "right-up", "right-low",
+        String[] breastQuad = { "left_up", "left_low", "right_up", "right_low",
                 "central" };
         String[] irradiat = { "yes", "no" };
 

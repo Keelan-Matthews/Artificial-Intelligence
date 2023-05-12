@@ -32,8 +32,8 @@ public class App {
         int inputSize = encoded.get(0).length - 1;
 
         NeuralNetwork nn = new NeuralNetwork(inputSize, 10, 0.001);
-        nn.train(trainingSet, 4000);
-        printFile(testingSet, nn);
+        // nn.train(trainingSet, 4000);
+        // printFile(testingSet, nn);
 
         //======= GENETIC PROGRAMMING =======//
         // Create a new GPClassifier
