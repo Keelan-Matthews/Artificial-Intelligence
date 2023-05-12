@@ -20,12 +20,25 @@ public class App {
             }
         }
 
+        // Reverse the order of the training set so that the network doesn't learn the
+        // data in order
+        for (int i = 0; i < trainingSet.size() / 2; i++) {
+            double[] temp = trainingSet.get(i);
+            trainingSet.set(i, trainingSet.get(trainingSet.size() - i - 1));
+            trainingSet.set(trainingSet.size() - i - 1, temp);
+        }
+
         // Get the size of the input layer
         int inputSize = encoded.get(0).length - 1;
 
-        NeuralNetwork nn = new NeuralNetwork(inputSize, 11, 0.01);
-        nn.train(trainingSet, 2000);
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 10, 0.001);
+        nn.train(trainingSet, 4000);
         printFile(testingSet, nn);
+
+        //======= GENETIC PROGRAMMING =======//
+        // Create a new GPClassifier
+        // GPClassifier gp = new GPClassifier();
+        // gp.run();
     }
 
     public static void printFile(ArrayList<double[]> encodedFile, NeuralNetwork nn) {
@@ -51,7 +64,7 @@ public class App {
         // If the prediction is closer to 1, output recurrence-events, else output
         // no-recurrence-events
         if (prediction > 0.5) {
-            System.out.print("recurrence-events    | output: " + prediction + " label: " + label);
+            System.out.print("prediction: recurrence-events    | output: " + prediction + " label: " + label);
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 1) {
@@ -61,7 +74,7 @@ public class App {
                 System.out.print("\033[91m incorrect\033[0m");
             }
         } else {
-            System.out.print("no-recurrence-events | output: " + prediction + " label: " + label);
+            System.out.print("prediction: no-recurrence-events | output: " + prediction + " label: " + label);
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 0) {

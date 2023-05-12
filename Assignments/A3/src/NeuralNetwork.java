@@ -33,18 +33,21 @@ public class NeuralNetwork {
      * Function to initialize the weights of the neural network
      */
     private void initializeWeights() {
+        // He initialization
+        double variance = 2.0 / (inputSize + hiddenSize);
+
         // Initialize the weights between the input and hidden layers
         for (int i = 0; i < inputSize; i++) {
             for (int j = 0; j < hiddenSize; j++) {
                 // Generate a random number between 0 and 0.1 because the weights need to be
                 // small
-                weightsInputHidden[i][j] = random.nextDouble() * 0.1;
+                weightsInputHidden[i][j] = random.nextGaussian() * Math.sqrt(variance);
             }
         }
 
         // Initialize the weights between the hidden and output layers
         for (int i = 0; i < hiddenSize; i++) {
-            weightsHiddenOutput[i] = random.nextDouble() * 0.1;
+            weightsHiddenOutput[i] = random.nextGaussian() * Math.sqrt(variance);
         }
     }
 
