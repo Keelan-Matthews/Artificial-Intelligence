@@ -4,14 +4,14 @@ import java.util.Random;
 public class GPClassifier {
     private static final int POPULATION_SIZE = 100;
     private static final int MAX_GENERATIONS = 50;
-    private static final int MAX_TREE_SIZE = 100;
     private static final double MUTATION_RATE = 0.1;
     private static final double CROSSOVER_RATE = 0.9;
     private static final int TOURNAMENT_SIZE = 5;
-    private static final int MAX_DEPTH = 3;
+    private static final int MAX_DEPTH = 6;
 
     private final ArrayList<String> categories;
     private final ArrayList<String[]> data;
+    private ArrayList<double[]> encodedData;
     private Random random;
     private long seed = 0;
 
@@ -57,23 +57,27 @@ public class GPClassifier {
         data.add(breast);
         data.add(breastQuad);
         data.add(irradiat);
+
+        // Encode the data
+        encodedData = new ArrayList<>();
+        encodedData = Encoder.encodeData(data);
     }
 
     // Function to generate a random tree
     public Node generateRandomTree(int maxDepth) {
         int randomIndex = random.nextInt(categories.size());
-        Node node = new Node(categories.get(randomIndex), data.get(randomIndex));
+        Node node = new Node(categories.get(randomIndex), encodedData.get(randomIndex));
 
         if (maxDepth == 0) {
             // If the max depth has been reached, return a leaf node
-            node.setLeaf();
+            node.setLeaf(true);
             return node;
         }
 
         // Randomly decide whether to make the node a leaf or not only if it isn't the
         // first node
         if (maxDepth != MAX_DEPTH && random.nextBoolean()) {
-            node.setLeaf();
+            node.setLeaf(true);
         } else {
             // If the node is not a leaf, generate a random tree for each value
             // of the node
@@ -88,7 +92,7 @@ public class GPClassifier {
         return node;
     }
 
-    public void run() {
+    public void run(ArrayList<double[]> inputsList) {
         // Generate the initial population
         Node[] population = new Node[POPULATION_SIZE];
 
@@ -97,10 +101,171 @@ public class GPClassifier {
         }
 
         // Run the algorithm for the specified number of generations
-        // for (int i = 0; i < MAX_GENERATIONS; i++) {
-        //     // Evaluate the fitness of each individual
+        for (int i = 0; i < MAX_GENERATIONS; i++) {
+            // Evaluate the fitness of each individual
+            double[] fitness = new double[POPULATION_SIZE];
 
-        // }
+            for (int j = 0; j < population.length; j++) {
+                // Run each tree through all the inputs and calculate the number of
+                // correct classifications / total number of classifications as the fitness
+                int correctClassifications = 0;
+
+                for (double[] inputs : inputsList) {
+                    if (TreeInterpreter.interpret(population[j], inputs)) {
+                        correctClassifications++;
+                    }
+                }
+
+                fitness[j] = (double) correctClassifications / inputsList.size();
+
+                // If the fitness is 1, then the tree is perfect and we can stop
+                // evaluating
+                if (fitness[j] == 1) {
+                    System.out.println("Perfect tree found!");
+                    printTree(population[j], 0);
+                    return;
+                }
+            }
+
+            // Find the best individual in the population
+            int bestIndex = 0;
+            double bestFitness = fitness[0];
+
+            for (int j = 1; j < fitness.length; j++) {
+                if (fitness[j] > bestFitness) {
+                    bestIndex = j;
+                    bestFitness = fitness[j];
+                }
+            }
+
+            System.out.println("Generation " + i + ":");
+            printTree(population[bestIndex], 0);
+            System.out.println("Fitness: " + bestFitness);
+
+            // Create the next generation
+            Node[] nextGeneration = new Node[POPULATION_SIZE];
+
+            for (int j = 0; j < nextGeneration.length; j++) {
+                // Select two parents using tournament selection
+                Node parent1 = tournamentSelection(population, fitness, TOURNAMENT_SIZE);
+                Node parent2 = tournamentSelection(population, fitness, TOURNAMENT_SIZE);
+
+                // Perform crossover based on the crossover rate
+                Node child;
+
+                if (random.nextDouble() < CROSSOVER_RATE) {
+                    child = crossover(parent1, parent2);
+                } else {
+                    child = parent1;
+                }
+
+                // Perform mutation based on the mutation rate
+                if (random.nextDouble() < MUTATION_RATE) {
+                    child = mutate(child);
+                }
+
+                nextGeneration[j] = child;
+            }
+
+            // Replace the old population with the new one
+            population = nextGeneration;
+        }
+    }
+
+    // Function to perform tournament selection
+    public Node tournamentSelection(Node[] population, double[] fitness, int tournamentSize) {
+        // Randomly select individuals from the population and return the best
+        // individual out of the selected ones
+
+        int bestIndex = random.nextInt(population.length);
+
+        for (int i = 0; i < tournamentSize - 1; i++) {
+            int randomIndex = random.nextInt(population.length);
+
+            if (fitness[randomIndex] > fitness[bestIndex]) {
+                bestIndex = randomIndex;
+            }
+        }
+
+        return population[bestIndex];
+    }
+
+    // Function to perform crossover, ensuring that pruning will occur if the
+    // maximum depth is reached
+    public Node crossover(Node parent1, Node parent2) {
+        
+        // Randomly select a depth and a node from each parent
+        // and swap the subtrees at those nodes.
+        // If the maximum depth is reached, then cut the subtree off 
+        // at the maximum depth.
+
+        int depth1 = random.nextInt(MAX_DEPTH + 1);
+        Node node1 = getNodeAtDepth(parent1, depth1);
+
+        int depth2 = random.nextInt(MAX_DEPTH + 1);
+        Node node2 = getNodeAtDepth(parent2, depth2);
+
+        Node child = parent1.clone();
+
+        if (depth1 == 0) {
+            child = node2;
+        } else {
+            Node parent1Node = getNodeAtDepth(child, depth1 - 1);
+            parent1Node.setChild(node2);
+        }
+
+        if (depth2 == 0) {
+            child = node1;
+        } else {
+            Node parent2Node = getNodeAtDepth(child, depth2 - 1);
+            parent2Node.setChild(node1);
+        }
+
+        return child;
+    }
+
+    // Function to perform mutation
+    public Node mutate(Node node) {
+        // Randomly select a node in the tree and replace it with a random tree
+        // of the same depth
+        int depth = random.nextInt(MAX_DEPTH + 1);
+        Node nodeToMutate = getNodeAtDepth(node, depth);
+
+        // Randomly decide whether to make the node a leaf or not
+        if (random.nextBoolean()) {
+            nodeToMutate.setLeaf(true);
+        }
+
+        // If the node is not a leaf, generate a random tree for each value
+        // of the node
+        if (!nodeToMutate.isLeaf()) {
+            Node[] children = new Node[nodeToMutate.getValues().length];
+
+            for (int i = 0; i < children.length; i++) {
+                children[i] = generateRandomTree(MAX_DEPTH - depth);
+            }
+            nodeToMutate.setChildren(children);
+        }
+
+        return node;
+    }
+
+    // Function to get the node at a certain depth
+    public Node getNodeAtDepth(Node node, int depth) {
+        if (depth == 0) {
+            return node;
+        }
+
+        if (node.isLeaf()) {
+            return node;
+        }
+
+        Node[] children = node.getChildren();
+
+        // Randomly select a child node
+        int randomIndex = random.nextInt(children.length);
+
+        return getNodeAtDepth(children[randomIndex], depth - 1);
     }
 
     // Function to print a tree

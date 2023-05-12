@@ -37,8 +37,8 @@ public class App {
 
         //======= GENETIC PROGRAMMING =======//
         // Create a new GPClassifier
-        // GPClassifier gp = new GPClassifier();
-        // gp.run();
+        GPClassifier gp = new GPClassifier();
+        gp.run(trainingSet);
     }
 
     public static void printFile(ArrayList<double[]> encodedFile, NeuralNetwork nn) {
