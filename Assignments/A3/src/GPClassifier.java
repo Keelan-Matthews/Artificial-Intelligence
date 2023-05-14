@@ -4,9 +4,9 @@ import java.util.Random;
 public class GPClassifier {
     private static final int POPULATION_SIZE = 100;
     private static final int MAX_GENERATIONS = 50;
-    private static final double MUTATION_RATE = 0.1;
+    private static final double MUTATION_RATE = 0.0;
     private static final double CROSSOVER_RATE = 0.9;
-    private static final int TOURNAMENT_SIZE = 20;
+    private static final int TOURNAMENT_SIZE = 5;
     private static final int MAX_DEPTH = 4;
 
     private final ArrayList<String> categories;
@@ -78,24 +78,32 @@ public class GPClassifier {
             double[] fitness = evaluateFitness(population, inputsList);
 
             // Find the best individual in the population
+            int bestIndex = 0;
             double bestFitness = fitness[0];
 
             for (int j = 1; j < fitness.length; j++) {
                 if (fitness[j] > bestFitness) {
+                    bestIndex = j;
                     bestFitness = fitness[j];
                 }
             }
 
             System.out.println("Generation " + i + ":");
-            System.out.println("Fitness: " + bestFitness);
+            System.out.println("Fitness: " + Math.round((double) bestFitness * 1000.0) / 10.0);
 
             // Create the next generation
             Node[] nextGeneration = new Node[POPULATION_SIZE];
 
             for (int j = 0; j < nextGeneration.length; j++) {
+
+                if (j == 0) {
+                    nextGeneration[j] = population[bestIndex];
+                    continue;
+                }
+
                 // Select two parents using tournament selection
-                Node parent1 = tournamentSelection(population, fitness, TOURNAMENT_SIZE);
-                Node parent2 = tournamentSelection(population, fitness, TOURNAMENT_SIZE);
+                Node parent1 = tournamentSelection(population, fitness);
+                Node parent2 = tournamentSelection(population, fitness);
 
                 // Perform crossover based on the crossover rate
                 Node child;
@@ -129,8 +137,10 @@ public class GPClassifier {
         }
 
         System.out.println("Final generation:");
+        System.out.println("===========================================");
         printTree(population[bestIndex], 0);
-        System.out.println("Fitness: " + fitness[bestIndex]);
+        System.out.println("===========================================");
+        System.out.println("Fitness: " + Math.round((double) fitness[bestIndex] * 1000.0) / 10.0);
 
         bestTree = population[bestIndex];
     }
@@ -205,6 +215,7 @@ public class GPClassifier {
             }
 
             fitness[i] = (double) correctClassifications / inputsList.size();
+            population[i].setFitness(fitness[i]);
         }
 
         return fitness;
@@ -218,13 +229,13 @@ public class GPClassifier {
      * @param tournamentSize
      * @return
      */
-    public Node tournamentSelection(Node[] population, double[] fitness, int tournamentSize) {
+    public Node tournamentSelection(Node[] population, double[] fitness) {
 
         // Pick the TOURNAMENT_SIZE random individuals from the population
-        Node[] tournament = new Node[tournamentSize];
-        double[] tournamentFitness = new double[tournamentSize];
+        Node[] tournament = new Node[TOURNAMENT_SIZE];
+        double[] tournamentFitness = new double[TOURNAMENT_SIZE];
 
-        for (int i = 0; i < tournamentSize; i++) {
+        for (int i = 0; i < TOURNAMENT_SIZE; i++) {
             int randomIndex = random.nextInt(population.length);
             tournament[i] = population[randomIndex];
             tournamentFitness[i] = fitness[randomIndex];
@@ -233,7 +244,7 @@ public class GPClassifier {
         // Find the best individual in the tournament
         int bestIndex = 0;
 
-        for (int i = 1; i < tournamentSize; i++) {
+        for (int i = 1; i < TOURNAMENT_SIZE; i++) {
             if (tournamentFitness[i] > tournamentFitness[bestIndex]) {
                 bestIndex = i;
             }

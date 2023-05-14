@@ -9,6 +9,7 @@ public class Node {
     private Node[] children; // One node for every value
     private Random random;
     private long seed;
+    private double fitness = 0;
 
     public Node(String category, double[] values) {
         this.category = category;
@@ -19,6 +20,14 @@ public class Node {
 
     public int getIndex() {
         return index;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public double getFitness() {
+        return fitness;
     }
 
     public boolean isLeaf() {

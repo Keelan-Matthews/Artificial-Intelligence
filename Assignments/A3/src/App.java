@@ -29,10 +29,10 @@ public class App {
 
         // ======= NEURAL NETWORK =======//
         // Get the size of the input layer
-        // int inputSize = encoded.get(0).length - 1;
-        // NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001);
-        // nn.train(trainingSet, 4000);
-        // printNNFile(testingSet, nn);
+        int inputSize = encoded.get(0).length - 1;
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001);
+        nn.train(trainingSet, 4000);
+        printNNFile(testingSet, nn);
 
         // ======= GENETIC PROGRAMMING =======//
         GPClassifier gp = new GPClassifier();
@@ -52,9 +52,18 @@ public class App {
         }
 
         // Print the accuracy of the neural network
+        // If accuracy is greater than 70%, print it green, else print it red
+        if ((double) numNNCorrect / encodedFile.size() > 0.7) {
+            System.out.print("\033[92m");
+        } else {
+            System.out.print("\033[91m");
+        }
         System.out.println("\nAccuracy: " + numNNCorrect + "/" + encodedFile.size() + " = "
-                + Math.round((double) numNNCorrect / encodedFile.size() * 1000.0) / 10.0 + "%");
+                + Math.round((double) numNNCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
         System.out.println();
+
+        // Reset the color
+        System.out.print("\033[0m");
     }
 
     public static void printGPFile(ArrayList<double[]> encodedFile, GPClassifier gp) {
@@ -68,9 +77,18 @@ public class App {
         }
 
         // Print the accuracy of the neural network
+        // If accuracy is greater than 70%, print it green, else print it red
+        if ((double) numGPCorrect / encodedFile.size() > 0.6) {
+            System.out.print("\033[92m");
+        } else {
+            System.out.print("\033[91m");
+        }
         System.out.println("\nAccuracy: " + numGPCorrect + "/" + encodedFile.size() + " = "
-                + Math.round((double) numGPCorrect / encodedFile.size() * 1000.0) / 10.0 + "%");
+                + Math.round((double) numGPCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
         System.out.println();
+
+        // Reset the color
+        System.out.print("\033[0m");
     }
 
     public static void printPrediction(double prediction, double label) {
