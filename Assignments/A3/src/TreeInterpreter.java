@@ -14,12 +14,12 @@ public class TreeInterpreter {
         int index = 0;
         double label = input[0]; // The first value in the input is the label
         double[] inputs = trimClassAttribtue(input); // Remove the class attribute from the input
+        int categoryIndex = 0;
 
         while (!currentNode.isLeaf()) {
-            double[] encoded = currentNode.getValues();
-
             // Category index determines which input we compare to the values
-            int categoryIndex = currentNode.index;
+            categoryIndex = currentNode.getIndex();
+            double[] encoded = currentNode.getValues();
 
             // Find the index of the value in the input based on the category index
             for (int i = 0; i < encoded.length; i++) {
@@ -42,8 +42,8 @@ public class TreeInterpreter {
 
         // Get the index of the value in the input for the leaf
         index = 0;
-        for (int i = 0; i < input.length; i++) {
-            if (inputs[i] == encoded[i]) {
+        for (int i = 0; i < encoded.length; i++) {
+            if (inputs[categoryIndex] == encoded[i]) {
                 index = i;
                 break;
             }

@@ -7,13 +7,13 @@ public class GPClassifier {
     private static final double MUTATION_RATE = 0.1;
     private static final double CROSSOVER_RATE = 0.9;
     private static final int TOURNAMENT_SIZE = 5;
-    private static final int MAX_DEPTH = 6;
+    private static final int MAX_DEPTH = 5;
 
     private final ArrayList<String> categories;
     private final ArrayList<String[]> data;
     private ArrayList<double[]> encodedData;
     private Random random;
-    private long seed = 0;
+    private long seed = 1;
 
     public GPClassifier() {
         this.random = new Random(seed);

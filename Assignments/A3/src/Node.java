@@ -1,7 +1,7 @@
 import java.util.Random;
 
 public class Node {
-    public int index;
+    private int index;
     private boolean isLeaf = false;
     private String category;
     private double[] values; // The number of child nodes this node must have
@@ -15,6 +15,10 @@ public class Node {
         this.values = values;
         this.random = new Random(seed);
         this.index = getCategoryIndex(category);
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public boolean isLeaf() {
