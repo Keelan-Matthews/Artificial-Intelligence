@@ -14,6 +14,7 @@ public class GPClassifier {
     private ArrayList<double[]> encodedData;
     private Random random;
     private long seed = 1;
+    private Node bestTree;
 
     public GPClassifier() {
         this.random = new Random(seed);
@@ -63,7 +64,7 @@ public class GPClassifier {
         encodedData = Encoder.encodeData(data);
     }
 
-    public void run(ArrayList<double[]> inputsList) {
+    public void train(ArrayList<double[]> inputsList) {
         // Generate the initial population
         Node[] population = new Node[POPULATION_SIZE];
 
@@ -119,6 +120,36 @@ public class GPClassifier {
             // Replace the old population with the new one
             population = nextGeneration;
         }
+
+        // Find the best individual in the population
+        int bestIndex = 0;
+        double[] fitness = evaluateFitness(population, inputsList);
+
+        for (int j = 1; j < population.length; j++) {
+            if (fitness[j] > fitness[bestIndex]) {
+                bestIndex = j;
+            }
+        }
+
+        System.out.println("Final generation:");
+        printTree(population[bestIndex], 0);
+        System.out.println("Fitness: " + fitness[bestIndex]);
+
+        bestTree = population[bestIndex];
+    }
+
+    /**
+     * Predicts the class of the given inputs using the best tree found during training
+     * @param inputs
+     * @return
+     */
+    public boolean predict(double[] inputs) {
+        if (bestTree == null) {
+            System.out.println("The classifier has not been trained yet.");
+            return false;
+        }
+
+        return TreeInterpreter.interpret(bestTree, inputs);
     }
 
     /**
