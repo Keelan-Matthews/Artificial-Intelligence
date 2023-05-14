@@ -63,6 +63,7 @@ public class App {
 
             if (prediction) {
                 System.out.println("\033[92m Correctly classified \033[0m");
+                numGPCorrect++;
             } else {
                 System.out.println("\033[91m Incorrectly classified \033[0m");
             }

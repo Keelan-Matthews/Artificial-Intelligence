@@ -109,48 +109,56 @@ public class Node {
     /**
      * This function will return a random node from the tree. The probability of
      * selecting a node is inversely proportional to its depth.
+     * 
      * @return
      */
     public Node getRandomNode() {
         double p = 1.0;
         Node currentNode = this;
+        Node parentNode = currentNode;
+
         while (!currentNode.isLeaf()) {
             int numChildren = currentNode.getValues().length;
             int randomIndex = random.nextInt(numChildren);
+
+            // Examine all the children of the current node. If they are all leaves,
+            // then return the current node's parent.
+            boolean allLeaves = true;
+            for (int i = 0; i < numChildren; i++) {
+                if (!currentNode.getChildren()[i].isLeaf()) {
+                    allLeaves = false;
+                    break;
+                }
+            }
+            if (allLeaves) {
+                return currentNode;
+            }
+
+            // Otherwise, select a random child node
+            parentNode = currentNode;
             currentNode = currentNode.getChildren()[randomIndex];
             p *= 0.5; // decrease the probability as depth increases
-            if (random.nextDouble() > p) {
+            if (currentNode.isLeaf() || random.nextDouble() > p) {
                 break; // with probability p, stop descending the tree
             }
         }
-        return currentNode;
+        return parentNode;
     }
 
-    public int getDepth() {
-        int depth = 0;
-        Node currentNode = this;
-        while (!currentNode.isLeaf()) {
-            depth++;
-            currentNode = currentNode.getRandomNode();
-        }
-        return depth;
-    }
 
     // This function will prune any nodes that are beyond the specified depth
-    public Node pruneToDepth(int depth) {
-        Node currentNode = this;
-        Node parent = null;
-        while (!currentNode.isLeaf()) {
-            parent = currentNode;
-            currentNode = currentNode.getRandomNode();
-        }
+    public void pruneToDepth(int depth) {
+        pruneBeyondDepthHelper(this, 1, depth);
+    }
 
-        // If the depth of the leaf is greater than the specified depth, then prune
-        if (currentNode.getDepth() > depth) {
-            parent.setLeaf(true);
-            parent.setChildren(null);
+    private void pruneBeyondDepthHelper(Node node, int currentDepth, int maxDepth) {
+        if (currentDepth >= maxDepth) {
+            // Remove all children
+            node.setLeaf(true);
+        } else if (!node.isLeaf()) {
+            for (Node child : node.getChildren()) {
+                pruneBeyondDepthHelper(child, currentDepth + 1, maxDepth);
+            }
         }
-
-        return this;
     }
 }

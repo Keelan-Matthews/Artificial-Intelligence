@@ -6,8 +6,8 @@ public class GPClassifier {
     private static final int MAX_GENERATIONS = 50;
     private static final double MUTATION_RATE = 0.1;
     private static final double CROSSOVER_RATE = 0.9;
-    private static final int TOURNAMENT_SIZE = 5;
-    private static final int MAX_DEPTH = 5;
+    private static final int TOURNAMENT_SIZE = 20;
+    private static final int MAX_DEPTH = 4;
 
     private final ArrayList<String> categories;
     private final ArrayList<String[]> data;
@@ -78,18 +78,15 @@ public class GPClassifier {
             double[] fitness = evaluateFitness(population, inputsList);
 
             // Find the best individual in the population
-            int bestIndex = 0;
             double bestFitness = fitness[0];
 
             for (int j = 1; j < fitness.length; j++) {
                 if (fitness[j] > bestFitness) {
-                    bestIndex = j;
                     bestFitness = fitness[j];
                 }
             }
 
             System.out.println("Generation " + i + ":");
-            printTree(population[bestIndex], 0);
             System.out.println("Fitness: " + bestFitness);
 
             // Create the next generation
@@ -223,22 +220,26 @@ public class GPClassifier {
      */
     public Node tournamentSelection(Node[] population, double[] fitness, int tournamentSize) {
 
-        // Pick a random individual from the population and set it as the best
-        int bestIndex = random.nextInt(population.length);
+        // Pick the TOURNAMENT_SIZE random individuals from the population
+        Node[] tournament = new Node[tournamentSize];
+        double[] tournamentFitness = new double[tournamentSize];
 
-        // Pick tournamentSize - 1 more individuals and see if they are better
-        for (int i = 0; i < tournamentSize - 1; i++) {
-            // Index of the random individual
+        for (int i = 0; i < tournamentSize; i++) {
             int randomIndex = random.nextInt(population.length);
+            tournament[i] = population[randomIndex];
+            tournamentFitness[i] = fitness[randomIndex];
+        }
 
-            // If the random individual is better than the current best, then replace the
-            // best
-            if (fitness[randomIndex] > fitness[bestIndex]) {
-                bestIndex = randomIndex;
+        // Find the best individual in the tournament
+        int bestIndex = 0;
+
+        for (int i = 1; i < tournamentSize; i++) {
+            if (tournamentFitness[i] > tournamentFitness[bestIndex]) {
+                bestIndex = i;
             }
         }
 
-        return population[bestIndex];
+        return tournament[bestIndex];
     }
 
     /**
@@ -260,6 +261,7 @@ public class GPClassifier {
         // Swap the children of the selected nodes
         Node[] children1 = node1.getChildren();
         Node[] children2 = node2.getChildren();
+
         int randomIndex1 = random.nextInt(children1.length);
         int randomIndex2 = random.nextInt(children2.length);
         Node temp = children1[randomIndex1];
@@ -291,12 +293,6 @@ public class GPClassifier {
             int randomIndex = random.nextInt(children.length);
             Node child = children[randomIndex];
             mutate(child);
-
-            // Prune the child if the maximum depth is exceeded
-            if (child.getDepth() > MAX_DEPTH) {
-                node.setChild(null);
-                node.setLeaf(true);
-            }
         }
     }
 
@@ -316,7 +312,7 @@ public class GPClassifier {
         } else {
             System.out.println(indent + "- " + node.getCategory() + " = {");
             for (int i = 0; i < node.getValues().length; i++) {
-                System.out.print(indent + "    " + node.getValues()[i] + " -> ");
+                System.out.print(indent + "    " + Math.round((double) node.getValues()[i] * 1000.0) / 10.0  + " -> ");
                 printTree(node.getChildren()[i], level + 1);
             }
             System.out.println(indent + "}");
