@@ -259,8 +259,96 @@ public class NeuralNetwork {
      * @param x
      * @return
      */
-    private double relu(double x) {         
+    private double relu(double x) {
         return Math.max(0, x);
     }
 
+    /**
+     * Function to calculate the positive F-measure of the neural network
+     * 
+     * @param inputsList
+     * @return
+     */
+    public double positiveFMeasure(ArrayList<double[]> inputsList) {
+        // Convert the array list into a 2D array
+        double[][] inputs = ListToArray(inputsList);
+
+        double truePositives = 0;
+        double falsePositives = 0;
+        double falseNegatives = 0;
+
+        for (int i = 0; i < inputs.length; i++) {
+            // The label is input[0], extract that and remove it from the input array
+            double label = inputs[i][0];
+            double output = predict(inputs[i]);
+
+            // If the output is greater than 0.5, then the prediction is 1
+            // Otherwise, the prediction is 0
+            double prediction = output > 0.5 ? 1 : 0;
+
+            // If the prediction is 1 and the label is 1, then it is a true positive
+            if (prediction == 1 && label == 1) {
+                truePositives++;
+            }
+            // If the prediction is 1 and the label is 0, then it is a false positive
+            else if (prediction == 1 && label == 0) {
+                falsePositives++;
+            }
+            // If the prediction is 0 and the label is 1, then it is a false negative
+            else if (prediction == 0 && label == 1) {
+                falseNegatives++;
+            }
+        }
+
+        // Calculate the precision and recall
+        double precision = truePositives / (truePositives + falsePositives);
+        double recall = truePositives / (truePositives + falseNegatives);
+
+        // Calculate the F-measure
+        double fMeasure = 2 * precision * recall / (precision + recall);
+
+        return fMeasure;
+    }
+
+    // negative F-measure
+    public double negativeFMeasure(ArrayList<double[]> inputsList) {
+        // Convert the array list into a 2D array
+        double[][] inputs = ListToArray(inputsList);
+
+        double trueNegatives = 0;
+        double falsePositives = 0;
+        double falseNegatives = 0;
+
+        for (int i = 0; i < inputs.length; i++) {
+            // The label is input[0], extract that and remove it from the input array
+            double label = inputs[i][0];
+            double output = predict(inputs[i]);
+
+            // If the output is greater than 0.5, then the prediction is 1
+            // Otherwise, the prediction is 0
+            double prediction = output > 0.5 ? 1 : 0;
+
+            // If the prediction is 0 and the label is 0, then it is a true negative
+            if (prediction == 0 && label == 0) {
+                trueNegatives++;
+            }
+            // If the prediction is 1 and the label is 0, then it is a false positive
+            else if (prediction == 1 && label == 0) {
+                falsePositives++;
+            }
+            // If the prediction is 0 and the label is 1, then it is a false negative
+            else if (prediction == 0 && label == 1) {
+                falseNegatives++;
+            }
+        }
+
+        // Calculate the precision and recall
+        double precision = trueNegatives / (trueNegatives + falsePositives);
+        double recall = trueNegatives / (trueNegatives + falseNegatives);
+
+        // Calculate the F-measure
+        double fMeasure = 2 * precision * recall / (precision + recall);
+
+        return fMeasure;
+    }
 }

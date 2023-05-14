@@ -5,6 +5,7 @@ public class App {
     public static ArrayList<String> testFile = new ArrayList<>();
     public static int numNNCorrect = 0;
     public static int numGPCorrect = 0;
+    public static long seed = 0; // Randomly splice the encoded file
 
     public static void main(String[] args) throws Exception {
         ArrayList<String> file = FileHandler.readFile("breast-cancer.data");
@@ -14,7 +15,7 @@ public class App {
         ArrayList<double[]> trainingSet = new ArrayList<>();
         ArrayList<double[]> testingSet = new ArrayList<>();
         {
-            //Splice the encoded set
+            // Splice the encoded set
             ArrayList<double[]> splicedEncodes = splice(encoded);
 
             // Split the spliced encoded set into a training (80%) and testing set (20%)
@@ -51,9 +52,21 @@ public class App {
             printPrediction(prediction, label);
         }
 
+        // Get the F-measure
+        double positiveFMeasure = nn.positiveFMeasure(encodedFile);
+        double negativeFMeasure = nn.negativeFMeasure(encodedFile);
+
+        // Round the F-measure to 3 decimal places
+        positiveFMeasure = Math.round(positiveFMeasure * 1000.0) / 1000.0;
+        negativeFMeasure = Math.round(negativeFMeasure * 1000.0) / 1000.0;
+
+        // Print the F-measure
+        System.out.println("\nPositive F-measure: " + positiveFMeasure);
+        System.out.println("Negative F-measure: " + negativeFMeasure);
+
         // Print the accuracy of the neural network
         // If accuracy is greater than 70%, print it green, else print it red
-        if ((double) numNNCorrect / encodedFile.size() > 0.7) {
+        if ((double) numNNCorrect / encodedFile.size() > 0.6) {
             System.out.print("\033[92m");
         } else {
             System.out.print("\033[91m");
@@ -73,8 +86,20 @@ public class App {
 
             if (prediction) {
                 numGPCorrect++;
-            } 
+            }
         }
+
+        // Get the F-measure
+        double positiveFMeasure = gp.positiveFMeasure(encodedFile);
+        double negativeFMeasure = gp.negativeFMeasure(encodedFile);
+
+        // Round the F-measure to 3 decimal places
+        positiveFMeasure = Math.round(positiveFMeasure * 1000.0) / 1000.0;
+        negativeFMeasure = Math.round(negativeFMeasure * 1000.0) / 1000.0;
+
+        // Print the F-measure
+        System.out.println("\nPositive F-measure: " + positiveFMeasure + " | Weka: 0.374");
+        System.out.println("Negative F-measure: " + negativeFMeasure + " | Weka: 0.856");
 
         // Print the accuracy of the neural network
         // If accuracy is greater than 70%, print it green, else print it red
@@ -125,7 +150,6 @@ public class App {
     public static ArrayList<double[]> splice(ArrayList<double[]> lines) {
         ArrayList<double[]> splicedLines = new ArrayList<>();
         ArrayList<Integer> usedPositions = new ArrayList<>();
-        long seed = 0;
         Random random = new Random(seed);
 
         // Loop through all the lines

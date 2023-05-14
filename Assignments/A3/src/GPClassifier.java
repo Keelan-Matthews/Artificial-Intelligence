@@ -329,4 +329,54 @@ public class GPClassifier {
             System.out.println(indent + "}");
         }
     }
+
+    // Function to calculate the positive F-measure of a tree
+    public double positiveFMeasure(ArrayList<double[]> inputsList) {
+        int truePositives = 0;
+        int falsePositives = 0;
+        int falseNegatives = 0;
+
+        for (double[] inputs : inputsList) {
+            boolean actual = inputs[inputs.length - 1] == 1.0;
+            boolean predicted = TreeInterpreter.interpret(bestTree, inputs);
+
+            if (actual && predicted) {
+                truePositives++;
+            } else if (!actual && predicted) {
+                falsePositives++;
+            } else if (actual && !predicted) {
+                falseNegatives++;
+            }
+        }
+
+        double precision = (double) truePositives / (truePositives + falsePositives);
+        double recall = (double) truePositives / (truePositives + falseNegatives);
+
+        return 2 * precision * recall / (precision + recall);
+    }
+
+    // Function to calculate the negative F-measure of a tree
+    public double negativeFMeasure(ArrayList<double[]> inputsList) {
+        int trueNegatives = 0;
+        int falsePositives = 0;
+        int falseNegatives = 0;
+
+        for (double[] inputs : inputsList) {
+            boolean actual = inputs[inputs.length - 1] == 1.0;
+            boolean predicted = TreeInterpreter.interpret(bestTree, inputs);
+
+            if (!actual && !predicted) {
+                trueNegatives++;
+            } else if (!actual && predicted) {
+                falsePositives++;
+            } else if (actual && !predicted) {
+                falseNegatives++;
+            }
+        }
+
+        double precision = (double) trueNegatives / (trueNegatives + falsePositives);
+        double recall = (double) trueNegatives / (trueNegatives + falseNegatives);
+
+        return 2 * precision * recall / (precision + recall);
+    }
 }
