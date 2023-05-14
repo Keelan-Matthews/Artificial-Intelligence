@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class App {
     public static ArrayList<String> testFile = new ArrayList<>();
@@ -13,25 +14,25 @@ public class App {
         ArrayList<double[]> trainingSet = new ArrayList<>();
         ArrayList<double[]> testingSet = new ArrayList<>();
         {
-            for (int i = 0; i < encoded.size(); i++) {
-                if (i % 2 == 0) {
-                    trainingSet.add(encoded.get(i));
+            //Splice the encoded set
+            ArrayList<double[]> splicedEncodes = splice(encoded);
+
+            // Split the spliced encoded set into a training (80%) and testing set (20%)
+            for (int i = 0; i < splicedEncodes.size(); i++) {
+                if (i < splicedEncodes.size() * 0.7) {
+                    trainingSet.add(splicedEncodes.get(i));
                 } else {
-                    testingSet.add(encoded.get(i));
+                    testingSet.add(splicedEncodes.get(i));
                 }
             }
-
-            // Splice the sets
-            trainingSet = splice(trainingSet);
-            testingSet = splice(testingSet);
         }
 
         // ======= NEURAL NETWORK =======//
         // Get the size of the input layer
-        // int inputSize = encoded.get(0).length - 1;
-        // NeuralNetwork nn = new NeuralNetwork(inputSize, 10, 0.001);
-        // nn.train(trainingSet, 4000);
-        // printNNFile(testingSet, nn);
+        int inputSize = encoded.get(0).length - 1;
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 10, 0.001);
+        nn.train(trainingSet, 4000);
+        printNNFile(testingSet, nn);
 
         // ======= GENETIC PROGRAMMING =======//
         GPClassifier gp = new GPClassifier();
@@ -62,11 +63,8 @@ public class App {
             boolean prediction = gp.predict(encodedFile.get(i));
 
             if (prediction) {
-                System.out.println("\033[92m Correctly classified \033[0m");
                 numGPCorrect++;
-            } else {
-                System.out.println("\033[91m Incorrectly classified \033[0m");
-            }
+            } 
         }
 
         // Print the accuracy of the neural network
@@ -105,15 +103,33 @@ public class App {
         System.out.println();
     }
 
-    // This function splices the arrayList lines by taking a top line, then bottom
-    // line
-    // and then the next top line and bottom line and so on
+    // Mix up all the line positions randomly
     public static ArrayList<double[]> splice(ArrayList<double[]> lines) {
-        ArrayList<double[]> spliced = new ArrayList<>();
-        for (int i = 0; i < lines.size() / 2; i++) {
-            spliced.add(lines.get(i));
-            spliced.add(lines.get(lines.size() - i - 1));
+        ArrayList<double[]> splicedLines = new ArrayList<>();
+        ArrayList<Integer> usedPositions = new ArrayList<>();
+        long seed = 0;
+        Random random = new Random(seed);
+
+        // Loop through all the lines
+        for (int i = 0; i < lines.size(); i++) {
+            // Get a random position
+            int position = random.nextInt(lines.size());
+
+            // If the position has not been used, add it to the spliced lines
+            if (!usedPositions.contains(position)) {
+                splicedLines.add(lines.get(position));
+                usedPositions.add(position);
+            } else {
+                // If the position has been used, decrement i so that the line is not skipped
+                i--;
+            }
+
+            // If all the positions have been used, reset the used positions
+            if (usedPositions.size() == lines.size()) {
+                usedPositions.clear();
+            }
         }
-        return spliced;
+
+        return splicedLines;
     }
 }
