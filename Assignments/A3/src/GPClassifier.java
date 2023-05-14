@@ -63,35 +63,6 @@ public class GPClassifier {
         encodedData = Encoder.encodeData(data);
     }
 
-    // Function to generate a random tree
-    public Node generateRandomTree(int maxDepth) {
-        int randomIndex = random.nextInt(categories.size());
-        Node node = new Node(categories.get(randomIndex), encodedData.get(randomIndex));
-
-        if (maxDepth == 0) {
-            // If the max depth has been reached, return a leaf node
-            node.setLeaf(true);
-            return node;
-        }
-
-        // Randomly decide whether to make the node a leaf or not only if it isn't the
-        // first node
-        if (maxDepth != MAX_DEPTH && random.nextBoolean()) {
-            node.setLeaf(true);
-        } else {
-            // If the node is not a leaf, generate a random tree for each value
-            // of the node
-            Node[] children = new Node[node.getValues().length];
-
-            for (int i = 0; i < children.length; i++) {
-                children[i] = generateRandomTree(maxDepth - 1);
-            }
-            node.setChildren(children);
-        }
-
-        return node;
-    }
-
     public void run(ArrayList<double[]> inputsList) {
         // Generate the initial population
         Node[] population = new Node[POPULATION_SIZE];
@@ -103,29 +74,7 @@ public class GPClassifier {
         // Run the algorithm for the specified number of generations
         for (int i = 0; i < MAX_GENERATIONS; i++) {
             // Evaluate the fitness of each individual
-            double[] fitness = new double[POPULATION_SIZE];
-
-            for (int j = 0; j < population.length; j++) {
-                // Run each tree through all the inputs and calculate the number of
-                // correct classifications / total number of classifications as the fitness
-                int correctClassifications = 0;
-
-                for (double[] inputs : inputsList) {
-                    if (TreeInterpreter.interpret(population[j], inputs)) {
-                        correctClassifications++;
-                    }
-                }
-
-                fitness[j] = (double) correctClassifications / inputsList.size();
-
-                // If the fitness is 1, then the tree is perfect and we can stop
-                // evaluating
-                if (fitness[j] == 1) {
-                    System.out.println("Perfect tree found!");
-                    printTree(population[j], 0);
-                    return;
-                }
-            }
+            double[] fitness = evaluateFitness(population, inputsList);
 
             // Find the best individual in the population
             int bestIndex = 0;
@@ -161,7 +110,7 @@ public class GPClassifier {
 
                 // Perform mutation based on the mutation rate
                 if (random.nextDouble() < MUTATION_RATE) {
-                    child = mutate(child);
+                    mutate(child);
                 }
 
                 nextGeneration[j] = child;
@@ -172,16 +121,87 @@ public class GPClassifier {
         }
     }
 
-    // Function to perform tournament selection
-    public Node tournamentSelection(Node[] population, double[] fitness, int tournamentSize) {
-        // Randomly select individuals from the population and return the best
-        // individual out of the selected ones
+    /**
+     * Generates a random tree with the given max depth
+     * 
+     * @param maxDepth
+     * @return
+     */
+    public Node generateRandomTree(int maxDepth) {
+        int randomIndex = random.nextInt(categories.size());
+        Node node = new Node(categories.get(randomIndex), encodedData.get(randomIndex));
 
+        if (maxDepth == 0) {
+            // If the max depth has been reached, return a leaf node
+            node.setLeaf(true);
+            return node;
+        }
+
+        // Randomly decide whether to make the node a leaf or not only if it isn't the
+        // first node with a lower probability of making it a leaf
+        if (random.nextDouble() < 0.3 && maxDepth != MAX_DEPTH) {
+            node.setLeaf(true);
+        } else {
+            // If the node is not a leaf, generate a random tree for each value
+            // of the node
+            Node[] children = new Node[node.getValues().length];
+
+            for (int i = 0; i < children.length; i++) {
+                children[i] = generateRandomTree(maxDepth - 1);
+            }
+            node.setChildren(children);
+        }
+
+        return node;
+    }
+
+    /**
+     * Function to evaluate the fitness of each individual in the population
+     * 
+     * @param population
+     * @param inputsList
+     * @return
+     */
+    public double[] evaluateFitness(Node[] population, ArrayList<double[]> inputsList) {
+        double[] fitness = new double[population.length];
+
+        for (int i = 0; i < population.length; i++) {
+            // Run each tree through all the inputs and calculate the number of
+            // correct classifications / total number of classifications as the fitness
+            int correctClassifications = 0;
+
+            for (double[] inputs : inputsList) {
+                if (TreeInterpreter.interpret(population[i], inputs)) {
+                    correctClassifications++;
+                }
+            }
+
+            fitness[i] = (double) correctClassifications / inputsList.size();
+        }
+
+        return fitness;
+    }
+
+    /**
+     * Function to perform tournament selection
+     * 
+     * @param population
+     * @param fitness
+     * @param tournamentSize
+     * @return
+     */
+    public Node tournamentSelection(Node[] population, double[] fitness, int tournamentSize) {
+
+        // Pick a random individual from the population and set it as the best
         int bestIndex = random.nextInt(population.length);
 
+        // Pick tournamentSize - 1 more individuals and see if they are better
         for (int i = 0; i < tournamentSize - 1; i++) {
+            // Index of the random individual
             int randomIndex = random.nextInt(population.length);
 
+            // If the random individual is better than the current best, then replace the
+            // best
             if (fitness[randomIndex] > fitness[bestIndex]) {
                 bestIndex = randomIndex;
             }
@@ -190,82 +210,63 @@ public class GPClassifier {
         return population[bestIndex];
     }
 
-    // Function to perform crossover, ensuring that pruning will occur if the
-    // maximum depth is reached
+    /**
+     * Function to perform crossover between two parents
+     * 
+     * @param parent1
+     * @param parent2
+     * @return
+     */
     public Node crossover(Node parent1, Node parent2) {
-        
-        // Randomly select a depth and a node from each parent
-        // and swap the subtrees at those nodes.
-        // If the maximum depth is reached, then cut the subtree off 
-        // at the maximum depth.
+        // Clone the parents to preserve their structure
+        Node child1 = parent1.clone();
+        Node child2 = parent2.clone();
 
-        int depth1 = random.nextInt(MAX_DEPTH + 1);
-        Node node1 = getNodeAtDepth(parent1, depth1);
+        // Randomly select a node from each parent to perform the crossover
+        Node node1 = child1.getRandomNode();
+        Node node2 = child2.getRandomNode();
 
-        int depth2 = random.nextInt(MAX_DEPTH + 1);
-        Node node2 = getNodeAtDepth(parent2, depth2);
+        // Swap the children of the selected nodes
+        Node[] children1 = node1.getChildren();
+        Node[] children2 = node2.getChildren();
+        int randomIndex1 = random.nextInt(children1.length);
+        int randomIndex2 = random.nextInt(children2.length);
+        Node temp = children1[randomIndex1];
+        children1[randomIndex1] = children2[randomIndex2];
+        children2[randomIndex2] = temp;
 
-        Node child = parent1.clone();
+        // Prune the children if the maximum depth is exceeded
+        child1.pruneToDepth(MAX_DEPTH);
+        child2.pruneToDepth(MAX_DEPTH);
 
-        if (depth1 == 0) {
-            child = node2;
-        } else {
-            Node parent1Node = getNodeAtDepth(child, depth1 - 1);
-            parent1Node.setChild(node2);
-        }
-
-        if (depth2 == 0) {
-            child = node1;
-        } else {
-            Node parent2Node = getNodeAtDepth(child, depth2 - 1);
-            parent2Node.setChild(node1);
-        }
-
-        return child;
+        // Randomly choose one of the children as the new child
+        return random.nextBoolean() ? child1 : child2;
     }
 
-    // Function to perform mutation
-    public Node mutate(Node node) {
-        // Randomly select a node in the tree and replace it with a random tree
-        // of the same depth
-        int depth = random.nextInt(MAX_DEPTH + 1);
-        Node nodeToMutate = getNodeAtDepth(node, depth);
-
-        // Randomly decide whether to make the node a leaf or not
-        if (random.nextBoolean()) {
-            nodeToMutate.setLeaf(true);
-        }
-
-        // If the node is not a leaf, generate a random tree for each value
-        // of the node
-        if (!nodeToMutate.isLeaf()) {
-            Node[] children = new Node[nodeToMutate.getValues().length];
-
-            for (int i = 0; i < children.length; i++) {
-                children[i] = generateRandomTree(MAX_DEPTH - depth);
-            }
-            nodeToMutate.setChildren(children);
-        }
-
-        return node;
-    }
-
-    // Function to get the node at a certain depth
-    public Node getNodeAtDepth(Node node, int depth) {
-        if (depth == 0) {
-            return node;
-        }
-
+    /**
+     * Function to mutate a node
+     * 
+     * @param node
+     */
+    public void mutate(Node node) {
+        // If the node is a leaf node, randomly choose a new value for it
         if (node.isLeaf()) {
-            return node;
+            double[] values = node.getValues();
+            int randomIndex = random.nextInt(values.length);
+            node.getLeafDecisions()[randomIndex] = random.nextBoolean();
+        } else {
+            // If the node is not a leaf node, recursively mutate one of its children
+            Node[] children = node.getChildren();
+            int randomIndex = random.nextInt(children.length);
+            Node child = children[randomIndex];
+            mutate(child);
+
+            // Prune the child if the maximum depth is exceeded
+            if (child.getDepth() > MAX_DEPTH) {
+                node.setChild(null);
+                node.setLeaf(true);
+            }
         }
-
-        Node[] children = node.getChildren();
-
-        // Randomly select a child node
-        int randomIndex = random.nextInt(children.length);
-
-        return getNodeAtDepth(children[randomIndex], depth - 1);
     }
 
     // Function to print a tree
@@ -274,26 +275,20 @@ public class GPClassifier {
             return;
         }
 
-        // Print the category of the node
-        System.out.println();
-        System.out.println("==CATEGORY==");
-        System.out.println(node.getCategory());
+        String indent = "";
+        for (int i = 0; i < level; i++) {
+            indent += "  ";
+        }
 
-        // If the node is a leaf, print its value
         if (node.isLeaf()) {
-            System.out.print("Leaf: ");
-            // Print out all the leaf values
-            for (int i = 0; i < node.getValues().length; i++) {
-                System.out.print(node.getValues()[i] + " ");
-            }
-            System.out.println();
+            System.out.println(indent + "- " + node.getCategory() + " = [LEAF]");
         } else {
-            // If the node is not a leaf, print its children
-            System.out.println();
+            System.out.println(indent + "- " + node.getCategory() + " = {");
             for (int i = 0; i < node.getValues().length; i++) {
-                System.out.println(node.getValues()[i] + ": ");
+                System.out.print(indent + "    " + node.getValues()[i] + " -> ");
                 printTree(node.getChildren()[i], level + 1);
             }
+            System.out.println(indent + "}");
         }
     }
 }

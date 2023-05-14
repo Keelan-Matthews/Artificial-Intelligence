@@ -61,6 +61,7 @@ public class Node {
     public Node clone() {
         Node clone = new Node(category, values);
         clone.setLeaf(isLeaf);
+        clone.setChildren(children);
         return clone;
     }
 
@@ -103,5 +104,53 @@ public class Node {
                 break;
         }
         return index;
+    }
+
+    /**
+     * This function will return a random node from the tree. The probability of
+     * selecting a node is inversely proportional to its depth.
+     * @return
+     */
+    public Node getRandomNode() {
+        double p = 1.0;
+        Node currentNode = this;
+        while (!currentNode.isLeaf()) {
+            int numChildren = currentNode.getValues().length;
+            int randomIndex = random.nextInt(numChildren);
+            currentNode = currentNode.getChildren()[randomIndex];
+            p *= 0.5; // decrease the probability as depth increases
+            if (random.nextDouble() > p) {
+                break; // with probability p, stop descending the tree
+            }
+        }
+        return currentNode;
+    }
+
+    public int getDepth() {
+        int depth = 0;
+        Node currentNode = this;
+        while (!currentNode.isLeaf()) {
+            depth++;
+            currentNode = currentNode.getRandomNode();
+        }
+        return depth;
+    }
+
+    // This function will prune any nodes that are beyond the specified depth
+    public Node pruneToDepth(int depth) {
+        Node currentNode = this;
+        Node parent = null;
+        while (!currentNode.isLeaf()) {
+            parent = currentNode;
+            currentNode = currentNode.getRandomNode();
+        }
+
+        // If the depth of the leaf is greater than the specified depth, then prune
+        if (currentNode.getDepth() > depth) {
+            parent.setLeaf(true);
+            parent.setChildren(null);
+        }
+
+        return this;
     }
 }
