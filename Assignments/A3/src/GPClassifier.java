@@ -86,8 +86,8 @@ public class GPClassifier {
                 }
             }
 
-            // System.out.println("Generation " + i + ":");
-            // System.out.println("Fitness: " + bestFitness);
+            System.out.println("Generation " + i + ":");
+            System.out.println("Fitness: " + bestFitness);
 
             // Create the next generation
             Node[] nextGeneration = new Node[POPULATION_SIZE];

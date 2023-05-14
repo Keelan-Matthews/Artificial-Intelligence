@@ -29,10 +29,10 @@ public class App {
 
         // ======= NEURAL NETWORK =======//
         // Get the size of the input layer
-        int inputSize = encoded.get(0).length - 1;
-        NeuralNetwork nn = new NeuralNetwork(inputSize, 10, 0.001);
-        nn.train(trainingSet, 4000);
-        printNNFile(testingSet, nn);
+        // int inputSize = encoded.get(0).length - 1;
+        // NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001);
+        // nn.train(trainingSet, 4000);
+        // printNNFile(testingSet, nn);
 
         // ======= GENETIC PROGRAMMING =======//
         GPClassifier gp = new GPClassifier();
