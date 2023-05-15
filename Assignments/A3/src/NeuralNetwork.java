@@ -311,6 +311,12 @@ public class NeuralNetwork {
         double precision = truePositives / (truePositives + falsePositives);
         double recall = truePositives / (truePositives + falseNegatives);
 
+        //Write the precision and recall to a file
+        FileHandler.writeToFile("\n====================\n", "NNResults.txt");
+        FileHandler.writeToFile("Positive precision: " + precision + "\n", "NNResults.txt");
+        FileHandler.writeToFile("Positive recall: " + recall + "\n", "NNResults.txt");
+
+
         // Calculate the F-measure
         double fMeasure = 2 * precision * recall / (precision + recall);
 
@@ -352,6 +358,11 @@ public class NeuralNetwork {
         // Calculate the precision and recall
         double precision = trueNegatives / (trueNegatives + falsePositives);
         double recall = trueNegatives / (trueNegatives + falseNegatives);
+
+        //Write the precision and recall to a file
+        FileHandler.writeToFile("Negative precision: " + precision + "\n", "NNResults.txt");
+        FileHandler.writeToFile("Negative recall: " + recall + "\n", "NNResults.txt");
+        FileHandler.writeToFile("====================\n", "NNResults.txt");
 
         // Calculate the F-measure
         double fMeasure = 2 * precision * recall / (precision + recall);

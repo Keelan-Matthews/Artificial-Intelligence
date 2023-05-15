@@ -199,7 +199,7 @@ public class GPClassifier {
 
         // Write the best fitnesses to a file
         System.out.println("\n\n====GP Results====\n");
-        System.out.println("Writing fitness results and best Decision Tree to file (This may take a while)...");
+        System.out.println("Writing fitness results and best Decision Tree to file (This may take a while, please be patient)...");
         FileHandler.writeGPResults(bestFitnesses, population[bestIndex], fitness[bestIndex]);
         System.out.println("Done! Viewable in \033[0;34m Results/GPResults.txt\033[0m");
     }
@@ -411,6 +411,10 @@ public class GPClassifier {
         double precision = (double) truePositives / (truePositives + falsePositives);
         double recall = (double) truePositives / (truePositives + falseNegatives);
 
+        FileHandler.writeToFile("\n====================\n", "GPResults.txt");
+        FileHandler.writeToFile("Positive precision: " + precision + "\n", "GPResults.txt");
+        FileHandler.writeToFile("Positive recall: " + recall + "\n", "GPResults.txt");
+
         return 2 * precision * recall / (precision + recall);
     }
 
@@ -435,6 +439,10 @@ public class GPClassifier {
 
         double precision = (double) trueNegatives / (trueNegatives + falsePositives);
         double recall = (double) trueNegatives / (trueNegatives + falseNegatives);
+
+        FileHandler.writeToFile("Negative precision: " + precision + "\n", "GPResults.txt");
+        FileHandler.writeToFile("Negative recall: " + recall + "\n", "GPResults.txt");
+        FileHandler.writeToFile("====================\n", "GPResults.txt");
 
         return 2 * precision * recall / (precision + recall);
     }
