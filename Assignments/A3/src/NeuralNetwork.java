@@ -112,11 +112,13 @@ public class NeuralNetwork {
                 break;
             }
 
-            System.out.println("Epoch " + (epoch + 1) + " error: " + error);
+            // System.out.println("Epoch " + (epoch + 1) + " error: " + error);
             epochError.add("Epoch " + (epoch + 1) + " error: " + error);
         }
 
         FileHandler.writeNNResults(epochError);
+        System.out.println("\n====NN Results====\n");
+        System.out.println("Wrote error results to \033[0;34m Results/NNResults.txt\033[0m");
     }
 
     /**

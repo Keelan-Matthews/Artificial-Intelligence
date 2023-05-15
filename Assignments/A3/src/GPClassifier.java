@@ -142,8 +142,8 @@ public class GPClassifier {
                 }
             }
 
-            System.out.println("Generation " + i + ":");
-            System.out.println("Fitness: " + Math.round((double) bestFitness * 1000.0) / 10.0);
+            // System.out.println("Generation " + i + ":");
+            // System.out.println("Fitness: " + Math.round((double) bestFitness * 1000.0) / 10.0);
 
             // Store the best fitness of this generation
             bestFitnesses.add(bestFitness);
@@ -198,9 +198,10 @@ public class GPClassifier {
         bestTree = population[bestIndex];
 
         // Write the best fitnesses to a file
-        System.out.println("Writing results and best Decision Tree to file (This may take a while)...");
+        System.out.println("\n\n====GP Results====\n");
+        System.out.println("Writing fitness results and best Decision Tree to file (This may take a while)...");
         FileHandler.writeGPResults(bestFitnesses, population[bestIndex], fitness[bestIndex]);
-        System.out.println("Done!");
+        System.out.println("Done! Viewable in \033[0;34m Results/GPResults.txt\033[0m");
     }
 
     /**

@@ -114,7 +114,7 @@ public class App {
 
         // Write the F-measure to a file
         String fMeasureLine = "\n================\nPositive F-measure: " + positiveFMeasure
-                + "\nNegative F-measure: " + negativeFMeasure + "\n================";
+                + " | Weka: 0.374\nNegative F-measure: " + negativeFMeasure + " | Weka: 0.856\n================";
         FileHandler.writeToFile(fMeasureLine, "GPResults.txt");
 
         // Print the accuracy of the neural network
@@ -139,29 +139,29 @@ public class App {
         // If the prediction is closer to 1, output recurrence-events, else output
         // no-recurrence-events
         if (prediction > 0.5) {
-            System.out.print("prediction: recurrence-events | output: " + prediction + " label: " + label); 
+            // System.out.print("prediction: recurrence-events | output: " + prediction + " label: " + label); 
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 1) {
-                System.out.print("\033[92m correct\033[0m");
+                // System.out.print("\033[92m correct\033[0m");
                 numNNCorrect++;
             } else {
-                System.out.print("\033[91m incorrect\033[0m");
+                // System.out.print("\033[91m incorrect\033[0m");
             }
         } else {
-            System.out.print("prediction: no-recurrence-events | output: " + prediction +
-            " label: " + label);
+            // System.out.print("prediction: no-recurrence-events | output: " + prediction +
+            // " label: " + label);
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 0) {
-                System.out.print("\033[92m correct\033[0m");
+                // System.out.print("\033[92m correct\033[0m");
                 numNNCorrect++;
             } else {
-                System.out.print("\033[91m incorrect\033[0m");
+                // System.out.print("\033[91m incorrect\033[0m");
             }
         }
 
-        System.out.println();
+        // System.out.println();
     }
 
     // Mix up all the line positions randomly
