@@ -7,7 +7,6 @@ public class NeuralNetwork {
     private double learningRate; // The rate at which the weights are updated during training
     private double[][] weightsInputHidden; // The weights between the input and hidden layers
     private double[] weightsHiddenOutput; // The weights between the hidden and output layers
-    private long seed = 0; // The seed for the random number generator
     private Random random; // The random number generator
 
     /**
@@ -17,7 +16,7 @@ public class NeuralNetwork {
      * @param hiddenSize
      * @param learningRate
      */
-    public NeuralNetwork(int inputSize, int hiddenSize, double learningRate) {
+    public NeuralNetwork(int inputSize, int hiddenSize, double learningRate, long seed) {
         this.inputSize = inputSize;
         this.hiddenSize = hiddenSize;
         this.learningRate = learningRate;

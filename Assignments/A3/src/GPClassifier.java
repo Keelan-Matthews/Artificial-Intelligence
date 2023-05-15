@@ -4,7 +4,7 @@ import java.util.Random;
 public class GPClassifier {
     private static final int POPULATION_SIZE = 100;
     private static final int MAX_GENERATIONS = 50;
-    private static final double MUTATION_RATE = 0.0;
+    private static final double MUTATION_RATE = 0.1;
     private static final double CROSSOVER_RATE = 0.9;
     private static final int TOURNAMENT_SIZE = 5;
     private static final int MAX_DEPTH = 4;
@@ -13,11 +13,10 @@ public class GPClassifier {
     private final ArrayList<String[]> data;
     private ArrayList<double[]> encodedData;
     private Random random;
-    private long seed = 1;
     private Node bestTree;
 
-    public GPClassifier() {
-        this.random = new Random(seed);
+    public GPClassifier(long seed) {
+        this.random = new Random(seed+1);
 
         this.categories = new ArrayList<>();
         this.data = new ArrayList<>();

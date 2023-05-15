@@ -8,7 +8,7 @@ public class Node {
     private boolean[] leafDecisions; // Assigning yes or no to each value if it is a leaf
     private Node[] children; // One node for every value
     private Random random;
-    private long seed;
+    private long seed = 0;
     private double fitness = 0;
 
     public Node(String category, double[] values) {
@@ -37,6 +37,8 @@ public class Node {
     public void setLeaf(boolean isLeaf) {
         this.isLeaf = isLeaf;
 
+        if (!this.isLeaf) return;
+        
         // Randomly decide whether each value is yes or no
         leafDecisions = new boolean[values.length];
         for (int i = 0; i < leafDecisions.length; i++) {

@@ -31,12 +31,12 @@ public class App {
         // ======= NEURAL NETWORK =======//
         // Get the size of the input layer
         int inputSize = encoded.get(0).length - 1;
-        NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001);
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001, seed);
         nn.train(trainingSet, 4000);
         printNNFile(testingSet, nn);
 
         // ======= GENETIC PROGRAMMING =======//
-        GPClassifier gp = new GPClassifier();
+        GPClassifier gp = new GPClassifier(seed);
         gp.train(trainingSet);
         printGPFile(testingSet, gp);
     }
