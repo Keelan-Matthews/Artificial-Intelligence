@@ -23,7 +23,7 @@ public class NeuralNetwork {
 
         this.weightsInputHidden = new double[inputSize][hiddenSize];
         this.weightsHiddenOutput = new double[hiddenSize];
-        this.random = new Random(seed);
+        this.random = new Random(seed+6);
 
         initializeWeights();
     }
@@ -74,10 +74,13 @@ public class NeuralNetwork {
     public void train(ArrayList<double[]> inputsList, int epochs) {
         int epochsWithoutImprovement = 0;
         double bestValidationError = Double.MAX_VALUE;
-        double tolerance = 0.01;
+        double tolerance = 0.1;
 
         // Convert the array list into a 2D array
         double[][] inputs = ListToArray(inputsList);
+
+        //Array to store the epoch error line as string
+        ArrayList<String> epochError = new ArrayList<String>();
 
         // Train the neural network for the specified number of epochs
         for (int epoch = 0; epoch < epochs; epoch++) {
@@ -110,7 +113,10 @@ public class NeuralNetwork {
             }
 
             System.out.println("Epoch " + (epoch + 1) + " error: " + error);
+            epochError.add("Epoch " + (epoch + 1) + " error: " + error);
         }
+
+        FileHandler.writeNNResults(epochError);
     }
 
     /**

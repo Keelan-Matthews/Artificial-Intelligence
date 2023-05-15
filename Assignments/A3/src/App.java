@@ -28,10 +28,10 @@ public class App {
             }
         }
 
-        // ======= NEURAL NETWORK =======//
-        // Get the size of the input layer
+        // // ======= NEURAL NETWORK =======//
+        // // Get the size of the input layer
         int inputSize = encoded.get(0).length - 1;
-        NeuralNetwork nn = new NeuralNetwork(inputSize, 7, 0.001, seed);
+        NeuralNetwork nn = new NeuralNetwork(inputSize, 5, 0.001, seed);
         nn.train(trainingSet, 4000);
         printNNFile(testingSet, nn);
 
@@ -64,19 +64,30 @@ public class App {
         System.out.println("\nPositive F-measure: " + positiveFMeasure);
         System.out.println("Negative F-measure: " + negativeFMeasure);
 
+        // Write the F-measure to a file
+        String fMeasureLine = "\n================\nPositive F-measure: " + positiveFMeasure
+                + "\nNegative F-measure: " + negativeFMeasure + "\n================";
+        FileHandler.writeToFile(fMeasureLine, "NNResults.txt");
+
         // Print the accuracy of the neural network
         // If accuracy is greater than 70%, print it green, else print it red
         if ((double) numNNCorrect / encodedFile.size() > 0.6) {
-            System.out.print("\033[92m");
+        System.out.print("\033[92m");
         } else {
-            System.out.print("\033[91m");
+        System.out.print("\033[91m");
         }
-        System.out.println("\nAccuracy: " + numNNCorrect + "/" + encodedFile.size() + " = "
-                + Math.round((double) numNNCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
+        System.out.println("\nAccuracy: " + numNNCorrect + "/" + encodedFile.size() +
+        " = "
+        + Math.round((double) numNNCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
         System.out.println();
 
         // Reset the color
         System.out.print("\033[0m");
+
+        double roundedAccuracy = Math.round((double) numNNCorrect / encodedFile.size() * 1000.0) / 10.0;
+        String accuracyLine = "\n================\nAccuracy " + roundedAccuracy + "%\n================";
+        // Append the accuracy to the file
+        FileHandler.writeToFile(accuracyLine, "NNResults.txt");
     }
 
     public static void printGPFile(ArrayList<double[]> encodedFile, GPClassifier gp) {
@@ -101,15 +112,21 @@ public class App {
         System.out.println("\nPositive F-measure: " + positiveFMeasure + " | Weka: 0.374");
         System.out.println("Negative F-measure: " + negativeFMeasure + " | Weka: 0.856");
 
+        // Write the F-measure to a file
+        String fMeasureLine = "\n================\nPositive F-measure: " + positiveFMeasure
+                + "\nNegative F-measure: " + negativeFMeasure + "\n================";
+        FileHandler.writeToFile(fMeasureLine, "GPResults.txt");
+
         // Print the accuracy of the neural network
         // If accuracy is greater than 70%, print it green, else print it red
         if ((double) numGPCorrect / encodedFile.size() > 0.6) {
-            System.out.print("\033[92m");
+        System.out.print("\033[92m");
         } else {
-            System.out.print("\033[91m");
+        System.out.print("\033[91m");
         }
-        System.out.println("\nAccuracy: " + numGPCorrect + "/" + encodedFile.size() + " = "
-                + Math.round((double) numGPCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
+        System.out.println("\nAccuracy: " + numGPCorrect + "/" + encodedFile.size() +
+        " = "
+        + Math.round((double) numGPCorrect / encodedFile.size() * 1000.0) / 10.0 + "% | Weka: 76.6 %");
         System.out.println();
 
         // Reset the color
@@ -122,7 +139,7 @@ public class App {
         // If the prediction is closer to 1, output recurrence-events, else output
         // no-recurrence-events
         if (prediction > 0.5) {
-            System.out.print("prediction: recurrence-events    | output: " + prediction + " label: " + label);
+            System.out.print("prediction: recurrence-events | output: " + prediction + " label: " + label); 
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 1) {
@@ -132,7 +149,8 @@ public class App {
                 System.out.print("\033[91m incorrect\033[0m");
             }
         } else {
-            System.out.print("prediction: no-recurrence-events | output: " + prediction + " label: " + label);
+            System.out.print("prediction: no-recurrence-events | output: " + prediction +
+            " label: " + label);
 
             // If the prediction is correct, output "correct", else output "incorrect"
             if (label == 0) {
