@@ -38,8 +38,6 @@ public class NeuralNetwork {
         // Initialize the weights between the input and hidden layers
         for (int i = 0; i < inputSize; i++) {
             for (int j = 0; j < hiddenSize; j++) {
-                // Generate a random number between 0 and 0.1 because the weights need to be
-                // small
                 weightsInputHidden[i][j] = random.nextGaussian() * Math.sqrt(variance);
             }
         }

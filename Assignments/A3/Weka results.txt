@@ -1,0 +1,99 @@
+=== Run information ===
+
+Scheme:       weka.classifiers.trees.J48 -C 0.25 -M 2
+Relation:     breast-cancer-wisconsin
+Instances:    286
+Attributes:   10
+              class
+              age
+              menopause
+              tumor-size
+              inv-nodes
+              node-caps
+              deg-malig
+              breast
+              breast-quad
+              irradiat
+Test mode:    10-fold cross-validation
+
+=== Classifier model (full training set) ===
+
+J48 pruned tree
+------------------
+
+inv-nodes = 0-2: no (213.0/30.0)
+inv-nodes = 3-5
+|   tumor-size = 0-4: no (0.0)
+|   tumor-size = 5-9: no (0.0)
+|   tumor-size = 10-14: no (1.0)
+|   tumor-size = 15-19: no (0.0)
+|   tumor-size = 20-24
+|   |   class = no-recurrence-events: no (6.0/1.0)
+|   |   class = recurrence-events: yes (6.0/2.0)
+|   tumor-size = 25-29: yes (8.0/2.0)
+|   tumor-size = 30-34: no (10.0/3.0)
+|   tumor-size = 35-39: no (0.0)
+|   tumor-size = 40-44
+|   |   breast-quad = left_up: yes (2.0)
+|   |   breast-quad = left_low: no (2.0)
+|   |   breast-quad = right_up: yes (1.0)
+|   |   breast-quad = right_low: yes (0.0)
+|   |   breast-quad = central: yes (0.0)
+|   tumor-size = 45-49: no (0.0)
+|   tumor-size = 50-54: no (0.0)
+|   tumor-size = 55-59: no (0.0)
+inv-nodes = 6-8
+|   tumor-size = 0-4: yes (0.0)
+|   tumor-size = 5-9: yes (0.0)
+|   tumor-size = 10-14: yes (1.0)
+|   tumor-size = 15-19: yes (1.0)
+|   tumor-size = 20-24: yes (1.0)
+|   tumor-size = 25-29: yes (3.0)
+|   tumor-size = 30-34: no (7.0/1.0)
+|   tumor-size = 35-39: no (1.0)
+|   tumor-size = 40-44: yes (2.0)
+|   tumor-size = 45-49: no (1.0)
+|   tumor-size = 50-54: yes (0.0)
+|   tumor-size = 55-59: yes (0.0)
+inv-nodes = 9-11: yes (10.0/3.0)
+inv-nodes = 12-14: yes (3.0)
+inv-nodes = 15-17: no (6.0/1.0)
+inv-nodes = 18-20: no (0.0)
+inv-nodes = 21-23: no (0.0)
+inv-nodes = 24-26: yes (1.0)
+inv-nodes = 27-29: no (0.0)
+inv-nodes = 30-32: no (0.0)
+inv-nodes = 33-35: no (0.0)
+inv-nodes = 36-39: no (0.0)
+
+Number of Leaves  : 	40
+
+Size of the tree : 	45
+
+
+Time taken to build model: 0.02 seconds
+
+=== Stratified cross-validation ===
+=== Summary ===
+
+Correctly Classified Instances         219               76.5734 %
+Incorrectly Classified Instances        67               23.4266 %
+Kappa statistic                          0.2425
+Mean absolute error                      0.3041
+Root mean squared error                  0.4167
+Relative absolute error                 83.6574 %
+Root relative squared error             97.8831 %
+Total Number of Instances              286     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.294    0.087    0.513      0.294    0.374      0.257    0.628     0.446     yes
+                 0.913    0.706    0.806      0.913    0.856      0.257    0.628     0.798     no
+Weighted Avg.    0.766    0.559    0.736      0.766    0.741      0.257    0.628     0.714     
+
+=== Confusion Matrix ===
+
+   a   b   <-- classified as
+  20  48 |   a = yes
+  19 199 |   b = no
